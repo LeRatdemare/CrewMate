@@ -6,14 +6,27 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public GameObject cardPrefab;
+    private GameObject[,] cards;
+    [SerializeField] public int nbColors;
+    [SerializeField] public int nbCardsPerColor;
+    [SerializeField] public int spriteWidth;
+    [SerializeField] public int spriteHeight;
+
     // Start is called before the first frame update
     void Start()
     {
-        for (int i = 0; i < 3; i++)
+        cards = new GameObject[nbColors, nbCardsPerColor];
+        // Chaque ligne correspond à une couleur
+        for (int i = 0; i < nbColors; i++)
         {
-            Vector3 pos = new Vector3(i * 20, 0, 0);
-            GameObject card = Instantiate(cardPrefab, pos, Quaternion.identity);
-            card.GetComponent<Image>().sprite = Resources.Load<Sprite>("suit_life_meter_2");
+            // Sur la colonne on met la carte i
+            for (int j = 0; j < nbCardsPerColor; j++)
+            {
+                Vector3 pos = new Vector3(2 * j - 9, i, 0);
+                cards[i, j] = Instantiate(cardPrefab, pos, Quaternion.identity);
+                cards[i, j].GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>($"0{i}{j}");
+                cards[i, j].GetComponent<SpriteRenderer>().size = new Vector2(spriteWidth, spriteHeight);
+            }
         }
     }
 }
