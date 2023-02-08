@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
             for (int j = 0; j < nbCardsPerColor; j++)
             {
                 Sprite sprite = Resources.Load<Sprite>($"Images/Cartes/0{i}{j}");
-                Vector3 pos = new Vector3(2.5f * j - 9, i * 4 - 4, 0);
+                Vector3 pos = new Vector3(2 * j - 9, i * 3.2f - 3.5f, 0);
                 cards[i, j] = Instantiate(cardPrefab, pos, Quaternion.identity);
                 cards[i, j].GetComponent<SpriteRenderer>().sprite = sprite;
             }
