@@ -251,3 +251,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2ea8231de110a548b7f7138e59eab33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cardPrefab: {fileID: 1628628751204658760, guid: 8a2b2f60287fa834cac65b74ebe0513f, type: 3}
+  nbColors: 4
+  nbCardsPerColor: 9
+  spriteWidth: 120
+  spriteHeight: 220
