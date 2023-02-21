@@ -12,14 +12,14 @@ public class Card : MonoBehaviour
 
     void OnMouseDown()
     {
-        transform.position = Input.mousePosition;
+        transform.localScale *= 2;
     }
     void OnMouseEnter()
     {
-        transform.position += Vector3.up;
+        transform.position += Vector3.up * 3f;
     }
     void OnMouseExit()
     {
-        transform.position += Vector3.down;
+        transform.position += Vector3.down * 3f;
     }
 }
