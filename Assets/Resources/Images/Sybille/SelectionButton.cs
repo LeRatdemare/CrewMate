@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class SelectionButton : MonoBehaviour
 {
-    
+    public static int BouttonJoueur;
 }
