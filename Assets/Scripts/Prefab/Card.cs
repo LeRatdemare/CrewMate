@@ -16,10 +16,10 @@ public class Card : MonoBehaviour
     }
     void OnMouseEnter()
     {
-        transform.localScale *= 2f;
+        transform.localScale *= 1.5f;
     }
     void OnMouseExit()
     {
-        transform.localScale /= 2f;
+        transform.localScale /= 1.5f;
     }
 }
