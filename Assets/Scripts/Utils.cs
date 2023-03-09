@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Utils : MonoBehaviour
 {
-    public static Color TransparentBlack = new Color(71, 67, 67, 20);
+    static Color TransparentBlack = new Color(71, 67, 67, 20);
     void Start()
     {
 
