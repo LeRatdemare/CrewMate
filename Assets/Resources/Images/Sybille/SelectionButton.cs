@@ -18,8 +18,8 @@ public class SelectionButton : MonoBehaviour
             GameObject.Find(typeBoutton+$"{bouttonPrevious[type]}").GetComponent<Image>().overrideSprite=sp2;
         }
         GameObject.Find(typeBoutton+$"{numero}").GetComponent<Image>().overrideSprite=sp1;
+        //GameObject.Find(typeBoutton+$"{numero}").GetComponent<Text>().FontStyle.Bold
         bouttonPrevious[type] = numero;
-        //Resources.Load<Sprite>("BoutonPressed");
     }
         
         
