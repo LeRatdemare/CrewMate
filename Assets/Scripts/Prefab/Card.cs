@@ -6,6 +6,7 @@ public class Card : MonoBehaviour
 {
     private bool selected;
     // Start is called before the first frame update
+
     void Start()
     {
 
@@ -13,15 +14,27 @@ public class Card : MonoBehaviour
 
     void OnMouseDown()
     {
-        if (selected)
+        // if (selected)
+        // {
+        //     transform.position -= new Vector3(0, 0.5f, 0);
+        //     selected = false;
+        // }
+        // else
+        // {
+        //     transform.position += new Vector3(0, 0.5f, 0);
+        //     selected = true;
+        // }
+        int slotIndex = 1;
+        GameObject slot = GameObject.Find($"Slot{slotIndex}");
+        while (slotIndex < 6 && !slot.GetComponent<CardSlot>().IsFree)
         {
-            transform.position -= new Vector3(0, 0.5f, 0);
-            selected = false;
+            slotIndex++;
+            slot = GameObject.Find($"Slot{slotIndex}");
         }
-        else
+        if (slotIndex < 6)
         {
-            transform.position += new Vector3(0, 0.5f, 0);
-            selected = true;
+            slot.GetComponent<SpriteRenderer>().sprite = GetComponent<SpriteRenderer>().sprite;
+            slot.GetComponent<CardSlot>().IsFree = false;
         }
     }
     void OnMouseEnter()
