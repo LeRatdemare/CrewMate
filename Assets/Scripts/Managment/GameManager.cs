@@ -6,8 +6,6 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public GameObject cardPrefab;
-    public GameObject handPanel;
-    // private GameObject[,] cards;
     private List<GameObject> cards;
     [SerializeField] public int nbColors;
     [SerializeField] public int nbCardsPerColor;
@@ -30,7 +28,7 @@ public class GameManager : MonoBehaviour
             rndCards.Add(Instantiate(cardPrefab, pos, Quaternion.identity));
             rndCards[i].GetComponent<SpriteRenderer>().sprite = sprite;
             rndCards[i].transform.localScale = new Vector3(0.55f, 0.55f, 1);
-            rndCards[i].transform.parent = handPanel.transform;
+            rndCards[i].transform.parent = GameObject.Find("HandPanel").transform;
         }
         return rndCards;
     }

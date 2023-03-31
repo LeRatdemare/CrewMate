@@ -5,25 +5,9 @@ using UnityEngine;
 public class Card : MonoBehaviour
 {
     private bool selected;
-    // Start is called before the first frame update
-
-    void Start()
-    {
-
-    }
 
     void OnMouseDown()
     {
-        // if (selected)
-        // {
-        //     transform.position -= new Vector3(0, 0.5f, 0);
-        //     selected = false;
-        // }
-        // else
-        // {
-        //     transform.position += new Vector3(0, 0.5f, 0);
-        //     selected = true;
-        // }
         int slotIndex = 1;
         GameObject slot = GameObject.Find($"Slot{slotIndex}");
         while (slotIndex < 6 && !slot.GetComponent<CardSlot>().IsFree)
