@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class Valider : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public static List<int> ParametrePartie = new List<int>();
+    //
+    // Changer variable du jeton de bool vers int (0/1)
+    public void ButtonValider(string nameScene){
+        //
+        //load Scene
     }
 }
