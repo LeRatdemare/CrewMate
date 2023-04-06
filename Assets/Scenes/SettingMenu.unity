@@ -2064,8 +2064,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 552ffad3d1c77e1468212200156d06f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  checkInt: {fileID: 1472695638}
-  selectionButton: {fileID: 1472695632}
 --- !u!1 &1581893016
 GameObject:
   m_ObjectHideFlags: 0
