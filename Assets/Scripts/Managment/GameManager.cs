@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
         List<GameObject> rndCards = new List<GameObject>();
         for (int i = 0; i < nbCards; i++)
         {
-            int color = Random.Range(1, 3); // On génère au hasard une couleur excepté les noirs
+            int color = Random.Range(1, 4); // On génère au hasard une couleur excepté les noirs
             int cardValue = Random.Range(1, 9); // Une génère la valeur de la carte
             Sprite sprite = Resources.Load<Sprite>($"Images/Cartes/0{color}{cardValue}");
             Vector3 pos = new Vector3(1.7f * i - 9, -3.5f, 0);
