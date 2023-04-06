@@ -421,6 +421,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TableauCartes
       objectReference: {fileID: 0}
+    - target: {fileID: 7707253572152791721, guid: 25b84ae6cb101954c906a00704bdae68, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 25b84ae6cb101954c906a00704bdae68, type: 3}
 --- !u!1 &1948504952

@@ -6,6 +6,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public GameObject cardPrefab;
+    public GameObject tableauCartes;
     private List<GameObject> cards;
     [SerializeField] public int nbColors;
     [SerializeField] public int nbCardsPerColor;
@@ -31,5 +32,12 @@ public class GameManager : MonoBehaviour
             rndCards[i].transform.parent = GameObject.Find("HandPanel").transform;
         }
         return rndCards;
+    }
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            tableauCartes.GetComponent<TableauCartes>().InverserVisibilite();
+        }
     }
 }
