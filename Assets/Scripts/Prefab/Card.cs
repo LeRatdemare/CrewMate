@@ -20,6 +20,7 @@ public class Card : MonoBehaviour
             slot.GetComponent<SpriteRenderer>().sprite = GetComponent<SpriteRenderer>().sprite;
             slot.GetComponent<CardSlot>().IsFree = false;
         }
+        // A changer
     }
     void OnMouseEnter()
     {
