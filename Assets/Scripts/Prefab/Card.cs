@@ -5,22 +5,66 @@ using UnityEngine;
 public class Card : MonoBehaviour
 {
     private bool selected;
+    [SerializeField]
+    private Utils.ConteneurCarte conteneur;
+    private GameManager gameManager;
+    public bool Activee { get; private set; } = false;
 
+    public void Activer(GameManager gameManager, Sprite sprite, Utils.ConteneurCarte conteneur)
+    {
+        this.gameManager = gameManager;
+        GetComponent<SpriteRenderer>().sprite = sprite;
+        this.conteneur = conteneur;
+        Activee = true;
+    }
+    public void Desactiver()
+    {
+        GetComponent<SpriteRenderer>().sprite = null;
+        Activee = false;
+    }
     void OnMouseDown()
     {
-        int slotIndex = 1;
-        GameObject slot = GameObject.Find($"Slot{slotIndex}");
-        while (slotIndex < 6 && !slot.GetComponent<CardSlot>().IsFree)
+        if (Activee)
         {
-            slotIndex++;
-            slot = GameObject.Find($"Slot{slotIndex}");
+            switch (conteneur)
+            {
+                case Utils.ConteneurCarte.HandPanel:
+                    PlayCard();
+                    break;
+                case Utils.ConteneurCarte.TableauCartes:
+                    AjouterDansLaMain();
+                    break;
+            }
         }
-        if (slotIndex < 6)
+    }
+    void PlayCard()
+    {
+        // int slotIndex = 1;
+        // GameObject slot = GameObject.Find($"Slot{slotIndex}");
+        // while (slotIndex < 6 && slot.GetComponent<Card>().Activee)
+        // {
+        //     slotIndex++;
+        //     slot = GameObject.Find($"Slot{slotIndex}");
+        // }
+        // if (slotIndex < 6)
+        // {
+        //     slot.GetComponent<Card>().Activer(gameManager, GetComponent<SpriteRenderer>().sprite, Utils.ConteneurCarte.Pli);
+        // }
+        Pli pli = gameManager.pli.GetComponent<Pli>();
+        GameObject slot = pli.GetRandomFreeSlot();
+        if (slot != null)
         {
-            slot.GetComponent<SpriteRenderer>().sprite = GetComponent<SpriteRenderer>().sprite;
-            slot.GetComponent<CardSlot>().IsFree = false;
+            slot.GetComponent<Card>().Activer(gameManager, GetComponent<SpriteRenderer>().sprite, Utils.ConteneurCarte.Pli);
+            Desactiver();
         }
-        // A changer
+        else
+        {
+            Debug.Log("Il n'y a plus de slot disponible dans le pli");
+        }
+    }
+    void AjouterDansLaMain()
+    {
+
     }
     void OnMouseEnter()
     {
