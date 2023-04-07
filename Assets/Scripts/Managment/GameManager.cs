@@ -31,10 +31,12 @@ public class GameManager : MonoBehaviour
     }
     void Update()
     {
+        // Cliquer sur 'espace' pour inverser la visibilité du tableau de cartes 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             tableauCartes.GetComponent<TableauCartes>().InverserVisibilite();
         }
+        // Cliquer sur 'r' pour vider le pli afin de pouvoir rejouer d'autres cartes
         if (Input.GetKeyDown(KeyCode.R))
         {
             pli.GetComponent<Pli>().ResetPli();
