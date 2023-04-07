@@ -21,12 +21,20 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < nbCards; i++)
         {
-            int color = Random.Range(1, 4); // On génère au hasard une couleur excepté les noirs
-            int cardValue = Random.Range(1, 9); // Une génère la valeur de la carte
-            Sprite sprite = Resources.Load<Sprite>($"Images/Cartes/0{color}{cardValue}");
+            int couleur;
+            int valeur;
+            GameObject cartePiochee;
+            do
+            {
+                couleur = Random.Range(0, 4); // On génère au hasard une couleur excepté les noirs
+                valeur = Random.Range(0, 9); // Une génère la valeur de la carte
+                cartePiochee = tableauCartes.GetComponent<TableauCartes>().cartes[couleur, valeur];
+            } while (cartePiochee == null || !cartePiochee.GetComponent<Card>().Activee);
+            Sprite sprite = Resources.Load<Sprite>($"Images/Cartes/0{couleur}{valeur + 1}");
 
             GameObject carte = handPanel.GetComponent<HandPanel>().GetFirstFreeSlot();
             carte.GetComponent<Card>().Activer(this, sprite, Utils.ConteneurCarte.HandPanel);
+            tableauCartes.GetComponent<TableauCartes>().cartes[couleur, valeur].GetComponent<Card>().Desactiver();
         }
     }
     void Update()

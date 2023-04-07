@@ -6,19 +6,21 @@ using UnityEngine.UIElements;
 public class TableauCartes : MonoBehaviour
 {
     // Start is called before the first frame update
-    public bool[,] cartesEnJeu;
+    public GameObject[,] cartes;
     public GameObject cardPrefab;
     public GameManager gameManager;
     public int NB_COULEURS;
     public int NB_VALEURS;
     void Start()
     {
-        cartesEnJeu = new bool[NB_COULEURS, NB_VALEURS];
+        cartes = new GameObject[NB_COULEURS, NB_VALEURS];
 
         for (int couleur = 0; couleur < NB_COULEURS; couleur++)
         {
             for (int valeur = 0; valeur < NB_VALEURS; valeur++)
             {
+                if (couleur == 0 && (valeur == 0 || valeur > 3)) continue;
+
                 Vector3 pos = new Vector3(1.7f * valeur - 6.8f, 1.1f * couleur - 0.6f, 0);
                 GameObject carte = Instantiate(cardPrefab, pos, Quaternion.identity);
 
@@ -29,6 +31,7 @@ public class TableauCartes : MonoBehaviour
                 carte.transform.parent = transform;
 
                 carte.GetComponent<Card>().Activer(gameManager, sprite, Utils.ConteneurCarte.TableauCartes);
+                cartes[couleur, valeur] = carte;
             }
         }
     }
