@@ -5,8 +5,8 @@ using UnityEngine;
 public class Utils : MonoBehaviour
 {
     static Color TransparentBlack = new Color(71, 67, 67, 20);
-    void Start()
+    public enum ConteneurCarte
     {
-
+        TableauCartes, HandPanel, Pli
     }
 }

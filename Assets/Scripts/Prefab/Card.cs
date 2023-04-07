@@ -5,31 +5,75 @@ using UnityEngine;
 public class Card : MonoBehaviour
 {
     private bool selected;
+    private Utils.ConteneurCarte conteneur;
+    private GameManager gameManager;
+    public bool Activee { get; private set; } = false;
 
+    public void Activer(GameManager gameManager, Sprite sprite, Utils.ConteneurCarte conteneur)
+    {
+        this.gameManager = gameManager;
+        GetComponent<SpriteRenderer>().sprite = sprite;
+        this.conteneur = conteneur;
+        Activee = true;
+    }
+    public void Desactiver()
+    {
+        GetComponent<SpriteRenderer>().sprite = null;
+        Activee = false;
+    }
     void OnMouseDown()
     {
-        int slotIndex = 1;
-        GameObject slot = GameObject.Find($"Slot{slotIndex}");
-        while (slotIndex < 6 && !slot.GetComponent<CardSlot>().IsFree)
+        if (Activee)
         {
-            slotIndex++;
-            slot = GameObject.Find($"Slot{slotIndex}");
+            switch (conteneur)
+            {
+                case Utils.ConteneurCarte.HandPanel:
+                    PlayCard();
+                    break;
+                case Utils.ConteneurCarte.TableauCartes:
+                    AjouterDansLaMain();
+                    break;
+            }
         }
-        if (slotIndex < 6)
+    }
+    void PlayCard()
+    {
+        Pli pli = gameManager.pli.GetComponent<Pli>();
+        GameObject slot = pli.GetRandomFreeSlot();
+        if (slot != null)
         {
-            slot.GetComponent<SpriteRenderer>().sprite = GetComponent<SpriteRenderer>().sprite;
-            slot.GetComponent<CardSlot>().IsFree = false;
+            slot.GetComponent<Card>().Activer(gameManager, GetComponent<SpriteRenderer>().sprite, Utils.ConteneurCarte.Pli);
+            Desactiver();
         }
-        // A changer
+        else
+        {
+            // Faire apparaître une fenêtre pour le message d'erreur
+            Debug.Log("Il n'y a plus de slot disponible dans le pli");
+        }
+    }
+    void AjouterDansLaMain()
+    {
+        HandPanel handPanel = gameManager.handPanel.GetComponent<HandPanel>();
+        GameObject slot = handPanel.GetFirstFreeSlot();
+        if (slot != null)
+        {
+            slot.GetComponent<Card>().Activer(gameManager, GetComponent<SpriteRenderer>().sprite, Utils.ConteneurCarte.HandPanel);
+            Desactiver();
+        }
+        else
+        {
+            // Faire apparaître une dddfenêtre pour le message d'erreur
+            Debug.Log("Il n'y a plus de slot disponible dans la main");
+        }
     }
     void OnMouseEnter()
     {
-        // transform.localScale *= 1.5f;
-        GetComponent<SpriteRenderer>().color = new Color(0.9f, 0.9f, 0.9f, 0.7f);
+        if (conteneur != Utils.ConteneurCarte.Pli)
+            GetComponent<SpriteRenderer>().color = new Color(0.9f, 0.9f, 0.9f, 0.7f);
     }
     void OnMouseExit()
     {
-        // transform.localScale /= 1.5f;
-        GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f);
+        if (conteneur != Utils.ConteneurCarte.Pli)
+            GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f);
     }
 }
