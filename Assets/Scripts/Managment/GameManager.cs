@@ -10,17 +10,35 @@ public class GameManager : MonoBehaviour
     public GameObject pli;
     public int nbColors;
     public int nbCardsPerColor;
+    public int nbJoueurs;
+    private int nbTours;
 
     // Start is called before the first frame update
     void Start()
     {
-        DrawRandomCards(14);
+        // Au départ le joueur commence par sélectionner ses cartes
+        DrawRandomCards(0);
+
+        // Ensuite, il sélectionne le 1er joueur
+
+        // Ensuite on rentre dans la boucle.
+        for (int tour = 0; tour < nbTours; tour++)
+        {
+
+        }
+    }
+
+    void InitialiseGame()
+    {
+        nbJoueurs = 3; // A vocation a pouvoir changer
+        nbTours = 40 / nbJoueurs;
     }
 
     private void DrawRandomCards(int nbCards)
     {
         for (int i = 0; i < nbCards; i++)
         {
+            int type = 0;
             int couleur;
             int valeur;
             GameObject cartePiochee;
@@ -30,10 +48,10 @@ public class GameManager : MonoBehaviour
                 valeur = Random.Range(0, 9); // Une génère la valeur de la carte
                 cartePiochee = tableauCartes.GetComponent<TableauCartes>().cartes[couleur, valeur];
             } while (cartePiochee == null || !cartePiochee.GetComponent<Card>().Activee);
-            Sprite sprite = Resources.Load<Sprite>($"Images/Cartes/0{couleur}{valeur + 1}");
+            Sprite sprite = Resources.Load<Sprite>($"Images/Cartes/{type}{couleur}{valeur + 1}");
 
             GameObject carte = handPanel.GetComponent<HandPanel>().GetFirstFreeSlot();
-            carte.GetComponent<Card>().Activer(this, sprite, Utils.ConteneurCarte.HandPanel);
+            carte.GetComponent<Card>().Activer(this, type, couleur, valeur + 1, sprite, Utils.ConteneurCarte.HandPanel);
             tableauCartes.GetComponent<TableauCartes>().cartes[couleur, valeur].GetComponent<Card>().Desactiver();
         }
     }
@@ -49,6 +67,5 @@ public class GameManager : MonoBehaviour
         {
             pli.GetComponent<Pli>().ResetPli();
         }
-
     }
 }

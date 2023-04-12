@@ -406,6 +406,7 @@ MonoBehaviour:
   pli: {fileID: 2123230406}
   nbColors: 4
   nbCardsPerColor: 9
+  nbJoueurs: 0
 --- !u!1 &2123230406 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8004955177098151229, guid: c8785feb78de1ed42b23a73a3cd6f30b, type: 3}
@@ -578,6 +579,14 @@ PrefabInstance:
     - target: {fileID: 6812033251894749360, guid: c8785feb78de1ed42b23a73a3cd6f30b, type: 3}
       propertyPath: m_WasSpriteAssigned
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7754395675838626304, guid: c8785feb78de1ed42b23a73a3cd6f30b, type: 3}
+      propertyPath: nbExistingSlots
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7754395675838626304, guid: c8785feb78de1ed42b23a73a3cd6f30b, type: 3}
+      propertyPath: nbPlayableSlots
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8004955177098151229, guid: c8785feb78de1ed42b23a73a3cd6f30b, type: 3}
       propertyPath: m_Name
