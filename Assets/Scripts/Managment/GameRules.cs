@@ -46,16 +46,16 @@ public class GameRules : MonoBehaviour
 
     private Card CardChallenge(Card Champion, Card Challenger)
     {
-        if (Champion.Couleur == Challenger.Couleur)   //si les couleurs sont les mêmes,
+        if (Champion.Color == Challenger.Color)   //si les couleurs sont les mêmes,
         {
-            if (Champion.Nombre > Challenger.Nombre) //il suffit de comparer les nombres.
+            if (Champion.Number > Challenger.Number) //il suffit de comparer les nombres.
                 return Champion;
             else
                 return Challenger;
         }
         else                                //sinon seul la couleur est importante
         {
-            if (Challenger.Couleur == Noir) //si le challengeur est noir alors champion 
+            if (Challenger.Color == 0) //si le challengeur est noir alors champion 
                 return Challenger;        //est de la couleur de l'atout donc le challengeur gagne
             else                    //sinon challengeur est soit ni noir ni de la couleur de l'atout donc il perd automatiquement
                 return Champion;    //ou challengeur est de la couleur de l'atout mais puisque Champion n'est pas de la couleur de Challengeur et que il est soit noir, soit de la couleur de l'atout alors Champion est forcément noir, donc Champion gagne.

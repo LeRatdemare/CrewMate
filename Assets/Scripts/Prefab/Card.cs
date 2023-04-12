@@ -5,19 +5,25 @@ using UnityEngine;
 public class Card : MonoBehaviour
 {
     private bool selected;
-    public int Color { get; }
-    public int Number { get; }
+    public int Color { get; } = 1;
+    public int Number { get; } = 1;
 
-    public bool PlayableCard(Card Carte, int Atout)
+    public Card(int color, int number)
     {
-        Atout = GameObject.Find("Pli").GetComponnant<GameRules>().AtoutActuel;
+        Color = color;
+        Number = number;
+    }
+
+    public bool PlayableCard(Card Carte, Card[] Main)
+    {
+        int Atout = GameObject.Find("Pli").GetComponent<GameRules>().AtoutActuel;
         if (Atout == -1)   //Atout = -1 signifie que il n'y a aucun atout actuel donc pas de carte jouée à ce pli
             return true;
         else
         {
-            if (HandHoldColor(Atout))   //Si on a des cartes dans la main qui a la couleur de l'atout
+            if (HandHoldColor(Atout, Main))   //Si on a des cartes dans la main qui a la couleur de l'atout
             {
-                if (Carte.Couleur == Atout)
+                if (Carte.Color == Atout)
                     return true;
                 else
                     return false;
@@ -27,9 +33,10 @@ public class Card : MonoBehaviour
         }
     }
 
-    public bool HandHoldColor(int Couleur)
+    //deuxième argument temporaire pour éviter les erreurs de compilations
+    public bool HandHoldColor(int Couleur, Card[] Main)
     {
-        foreach (Card Carte in Joueur.Main)
+        foreach (Card Carte in Main)
         {
             if (Color == Couleur)
             {
@@ -42,21 +49,21 @@ public class Card : MonoBehaviour
     public string AvailableCommunication(int[] MaxParCouleur, int[] MinParCouleur, Card Carte) //changer argument Carte en fonction de l'endroit où on dois placer la fonnction, si dans carte retirer totalement l'argument
     {
         // Ordre des couleurs :  Bleu, Jaune, Rose
-        int IndiceCouleur = Carte.Couleur - 1; //on réduit de 1 pour que ça passe dans le tableau
+        int IndiceCouleur = Carte.Color - 1; //on réduit de 1 pour que ça passe dans le tableau
         if (IndiceCouleur == -1) //si c'est une carte noir
-            return None;
+            return "";
         else
         {
-            if (Carte.Nombre == MaxParCouleur[IndiceCouleur]) //si carte est la carte du haut
+            if (Carte.Number == MaxParCouleur[IndiceCouleur]) //si carte est la carte du haut
             {
-                if (Carte.Nombre == MinParCouleur[IndiceCouleur]) //si carte est la carte du bas
+                if (Carte.Number == MinParCouleur[IndiceCouleur]) //si carte est la carte du bas
                     return "Milieu";    //la carte est la plus haute et la plus basse donc la seul
                 else
                     return "Haut";
             }
             else
             {
-                if (Carte.Nombre == MinParCouleur[IndiceCouleur]) // si carte est la carte du bas
+                if (Carte.Number == MinParCouleur[IndiceCouleur]) // si carte est la carte du bas
                     return "Bas";
                 else
                     return "";
@@ -91,4 +98,5 @@ public class Card : MonoBehaviour
         // transform.localScale /= 1.5f;
         GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f);
     }
+
 }
