@@ -6,38 +6,23 @@ public class GameRules : MonoBehaviour
 {
     //le choix de comment obtenir la couleur est à réfléchir
     public List<Card> CardPlayed = new List<Card>();
-    private int atoutActuel;
-    public int AtoutActuel
+    private int couleurDuPliActuel;
+    public int CouleurDuPliActuel
     {
-        get { return atoutActuel; }
+        get { return couleurDuPliActuel; }
         set
         {
             if (value == -1)
-                atoutActuel = value;
+                couleurDuPliActuel = value;
             else
-                if (NbCarteJouer == 0) atoutActuel = value;
-        }
-    }
-
-    //temporaire pour éviter les erreurs
-    private int nbCarteJouer;
-    public int NbCarteJouer
-    {
-        get
-        {
-            int i = 0;
-            foreach (Card Carte in CardPlayed)
-            {
-                i++;
-            }
-            return i;
+                if (CardPlayed.Count == 0) couleurDuPliActuel = value;
         }
     }
 
     public Card CarteGaganteDuPli()
     {
         Card WinningCard = CardPlayed[0];
-        for (int i = 1; i < NbCarteJouer; i++)
+        for (int i = 1; i < CardPlayed.Count; i++)
         {
             WinningCard = CardChallenge(WinningCard, CardPlayed[i]);
         }
@@ -56,15 +41,11 @@ public class GameRules : MonoBehaviour
         else                                //sinon seul la couleur est importante
         {
             if (Challenger.Color == 0) //si le challengeur est noir alors champion 
-                return Challenger;        //est de la couleur de l'atout donc le challengeur gagne
-            else                    //sinon challengeur est soit ni noir ni de la couleur de l'atout donc il perd automatiquement
-                return Champion;    //ou challengeur est de la couleur de l'atout mais puisque Champion n'est pas de la couleur de Challengeur et que il est soit noir, soit de la couleur de l'atout alors Champion est forcément noir, donc Champion gagne.
+                return Challenger;        //est de la couleur de l'CouleurDuPli donc le challengeur gagne
+            else                    //sinon challengeur est soit ni noir ni de la couleur de la couleur du pli donc il perd automatiquement
+                return Champion;    //ou challengeur est de la couleur de l'CouleurDuPli mais puisque Champion n'est pas de la couleur de Challengeur et que il est soit noir, soit de la couleur de la couleur du pli alors Champion est forcément noir, donc Champion gagne.
         }
     }
-
-    //A mettre dans programme mais pour l'instant je le stocke ici
-
-
 
     // Update is called once per frame
     void Update()

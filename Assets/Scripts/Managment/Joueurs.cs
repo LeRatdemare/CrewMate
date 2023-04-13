@@ -6,7 +6,7 @@ public class Joueurs : MonoBehaviour
 {
     public int NumeroJoueur{get;}
     public List<Card> Main{get; set;}
-    public Lsit<Card> Tache{get; set;}
+    public List<Card> Tache{get; set;}
     
     // Start is called before the first frame update
     void Start()

@@ -16,18 +16,22 @@ public class Card : MonoBehaviour
 
     public bool PlayableCard()
     {
-        Card?[] Main = GetComponentInParent<
-        int Atout = GameObject.Find("Pli").GetComponent<GameRules>().AtoutActuel;
-        if (Atout == -1)   //Atout = -1 signifie que il n'y a aucun atout actuel donc pas de carte jouée à ce pli
+        //List<Card> Hand = transform.parent.GetComponent<HandPanel>().Hand;
+        List<Card> Hand = new List<Card>();
+        int CouleurDuPli = GameObject.Find("Pli").GetComponent<GameRules>().CouleurDuPliActuel;
+        if (CouleurDuPli == -1)   //CouleurDuPli = -1 signifie que il n'y a aucun couleur au pli actuel donc pas de carte jouée à ce pli
             return true;
         else
         {
-            if (HandHoldColor(Atout, Main))   //Si on a des cartes dans la main qui a la couleur de l'atout
+            if (HandHoldColor(CouleurDuPli, Hand))   //Si on a des cartes dans la main qui a la couleur de la couleur du pli
             {
-                if (Color == Atout)
+                if (Color == CouleurDuPli)
                     return true;
                 else
+                {
+                    GetComponent<SpriteRenderer>().color = new Color(0.2f, 0.2f, 0.2f, 0);
                     return false;
+                }
             }
             else
                 return true;
@@ -35,9 +39,9 @@ public class Card : MonoBehaviour
     }
 
     //deuxième argument temporaire pour éviter les erreurs de compilations
-    public bool HandHoldColor(int Couleur, Card?[] Main)
+    public bool HandHoldColor(int Couleur, List<Card> Hand)
     {
-        foreach (Card Carte in Main)
+        foreach (Card Carte in Hand)
         {
             if (Color == Couleur)
             {
@@ -47,8 +51,10 @@ public class Card : MonoBehaviour
         return false;
     }
 
+    //deux premiers arguments temporaire pour éviter les erreurs de compilations
     public string AvailableCommunication(int[] MaxParCouleur, int[] MinParCouleur, Card Carte) //changer argument Carte en fonction de l'endroit où on dois placer la fonnction, si dans carte retirer totalement l'argument
     {
+        //
         // Ordre des couleurs :  Bleu, Jaune, Rose
         int IndiceCouleur = Carte.Color - 1; //on réduit de 1 pour que ça passe dans le tableau
         if (IndiceCouleur == -1) //si c'est une carte noir
@@ -92,6 +98,7 @@ public class Card : MonoBehaviour
         }
         // A changer
     }
+
     void OnMouseEnter()
     {
         // transform.localScale *= 1.5f;
