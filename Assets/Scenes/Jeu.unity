@@ -362,7 +362,7 @@ GameObject:
   - component: {fileID: 404798305}
   - component: {fileID: 404798304}
   m_Layer: 5
-  m_Name: Image
+  m_Name: PopUp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -757,6 +757,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1948504953}
   - component: {fileID: 1948504954}
+  - component: {fileID: 1948504955}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -794,6 +795,18 @@ MonoBehaviour:
   cardPrefab: {fileID: 1628628751204658760, guid: 8a2b2f60287fa834cac65b74ebe0513f, type: 3}
   nbColors: 4
   nbCardsPerColor: 9
+--- !u!114 &1948504955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1948504952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3efb0376fd822a498bf90d19681e783, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8004955177056274132
 PrefabInstance:
   m_ObjectHideFlags: 0
