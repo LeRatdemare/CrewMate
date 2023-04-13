@@ -14,7 +14,7 @@ public class Card : MonoBehaviour
         Number = number;
     }
 
-    public bool PlayableCard(Card Carte, Card[] Main)
+    public bool PlayableCard(Card[] Main)
     {
         int Atout = GameObject.Find("Pli").GetComponent<GameRules>().AtoutActuel;
         if (Atout == -1)   //Atout = -1 signifie que il n'y a aucun atout actuel donc pas de carte jouée à ce pli
@@ -23,7 +23,7 @@ public class Card : MonoBehaviour
         {
             if (HandHoldColor(Atout, Main))   //Si on a des cartes dans la main qui a la couleur de l'atout
             {
-                if (Carte.Color == Atout)
+                if (Color == Atout)
                     return true;
                 else
                     return false;
@@ -34,7 +34,7 @@ public class Card : MonoBehaviour
     }
 
     //deuxième argument temporaire pour éviter les erreurs de compilations
-    public bool HandHoldColor(int Couleur, Card[] Main)
+    public bool HandHoldColor(int Couleur, Card?[] Main)
     {
         foreach (Card Carte in Main)
         {
@@ -72,19 +72,22 @@ public class Card : MonoBehaviour
     }
     void OnMouseDown()
     {
-        int slotIndex = 1;
-        GameObject slot = GameObject.Find($"Slot{slotIndex}");
-        GameObject pli = GameObject.Find("Pli");
-        while (slotIndex < 6 && !slot.GetComponent<CardSlot>().IsFree)
+        if (PlayableCard())
         {
-            slotIndex++;
-            slot = GameObject.Find($"Slot{slotIndex}");
-        }
-        if (slotIndex < 6)
-        {
-            slot.GetComponent<SpriteRenderer>().sprite = GetComponent<SpriteRenderer>().sprite;
-            slot.GetComponent<CardSlot>().IsFree = false;
-            pli.GetComponent<GameRules>().CardPlayed.Add(this);
+            int slotIndex = 1;
+            GameObject slot = GameObject.Find($"Slot{slotIndex}");
+            GameObject pli = GameObject.Find("Pli");
+            while (slotIndex < 6 && !slot.GetComponent<CardSlot>().IsFree)
+            {
+                slotIndex++;
+                slot = GameObject.Find($"Slot{slotIndex}");
+            }
+            if (slotIndex < 6)
+            {
+                slot.GetComponent<SpriteRenderer>().sprite = GetComponent<SpriteRenderer>().sprite;
+                slot.GetComponent<CardSlot>().IsFree = false;
+                pli.GetComponent<GameRules>().CardPlayed.Add(this);
+            }
         }
         // A changer
     }
