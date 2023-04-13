@@ -91,25 +91,25 @@ public class Card : MonoBehaviour, IComparable
     }
 
     //deux premiers arguments temporaire pour éviter les erreurs de compilations
-    public Communication AvailableCommunication(int[] MaxParCouleur, int[] MinParCouleur, Card Carte) //changer argument Carte en fonction de l'endroit où on dois placer la fonnction, si dans carte retirer totalement l'argument
+    public Communication AvailableCommunication(int[] maxParCouleur, int[] minParCouleur, Card carte) //changer argument Carte en fonction de l'endroit où on dois placer la fonnction, si dans carte retirer totalement l'argument
     {
         //
         // Ordre des couleurs :  Bleu, Jaune, Rose
-        int IndiceCouleur = Carte.Color - (Couleur)1; //on réduit de 1 pour que ça passe dans le tableau
-        if (IndiceCouleur == -1) //si c'est une carte noir
+        int indiceCouleur = carte.Color - (Couleur)1; //on réduit de 1 pour que ça passe dans le tableau
+        if (indiceCouleur == -1) //si c'est une carte noir
             return Communication.Rien;
         else
         {
-            if (Carte.Value == MaxParCouleur[IndiceCouleur]) //si carte est la carte du haut
+            if (carte.Value == maxParCouleur[indiceCouleur]) //si carte est la carte du haut
             {
-                if (Carte.Value == MinParCouleur[IndiceCouleur]) //si carte est la carte du bas
+                if (carte.Value == minParCouleur[indiceCouleur]) //si carte est la carte du bas
                     return Communication.Seul;    //la carte est la plus haute et la plus basse donc la seul
                 else
                     return Communication.Haut;
             }
             else
             {
-                if (Carte.Value == MinParCouleur[IndiceCouleur]) // si carte est la carte du bas
+                if (carte.Value == minParCouleur[indiceCouleur]) // si carte est la carte du bas
                     return Communication.Bas;
                 else
                     return Communication.Rien;

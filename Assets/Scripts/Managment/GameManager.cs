@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public TheCrewGame theCrewGame;
+    private TheCrewGame theCrewGame;
     public GameObject handPanel;
     public GameObject tableauCartes;
     public GameObject pli;

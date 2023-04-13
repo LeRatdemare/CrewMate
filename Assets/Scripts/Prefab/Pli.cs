@@ -16,10 +16,10 @@ public class Pli : MonoBehaviour
             if (value == Card.Couleur.Neutre)
                 couleurDemandee = value;
             else
-                if (CardsPlayed.Count == 0) couleurDemandee = value;
+                if (cardsPlayed.Count == 0) couleurDemandee = value;
         }
     }
-    public List<Card> CardsPlayed;
+    public List<Card> cardsPlayed;
 
     // Start is called before the first frame update
     void Start()
@@ -60,10 +60,10 @@ public class Pli : MonoBehaviour
     }
     public Card GetStrongestCard()
     {
-        Card strongest = CardsPlayed[0];
-        for (int i = 1; i < CardsPlayed.Count; i++)
+        Card strongest = cardsPlayed[0];
+        for (int i = 1; i < cardsPlayed.Count; i++)
         {
-            strongest = CardChallenge(strongest, CardsPlayed[i]);
+            strongest = CardChallenge(strongest, cardsPlayed[i]);
         }
         return strongest;
     }
