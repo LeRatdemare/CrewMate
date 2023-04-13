@@ -6,6 +6,9 @@ public class Pli : MonoBehaviour
 {
     public int nbExistingSlots;
     public int nbPlayableSlots;
+    public int premierJoueur;
+    public Card.Couleur couleurDemandee;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -41,5 +44,11 @@ public class Pli : MonoBehaviour
             if (transform.GetChild(i).GetComponent<Card>().Activee) nbOccupiedSlots++;
         }
         return nbOccupiedSlots;
+    }
+    public Card GetStrongestCard()
+    {
+        // A coder...
+        Card strongest = new Card(0, 0, 0); // A changer en fonction de la meilleure carte
+        return strongest;
     }
 }

@@ -5,15 +5,27 @@ using UnityEngine;
 
 public class Card : MonoBehaviour, IComparable
 {
+    public enum Couleur
+    {
+        Neutre = -1, Noir = 0, Bleu = 1, Jaune = 2, Rose = 3
+    }
+
     public int Type { get; private set; }
-    public int Color { get; private set; }
+    public Couleur Color { get; private set; }
     public int Value { get; private set; }
     private bool selected;
     private Utils.ConteneurCarte conteneur;
     private GameManager gameManager;
     public bool Activee { get; private set; } = false;
 
-    public void Activer(GameManager gameManager, int type, int color, int value, Sprite sprite, Utils.ConteneurCarte conteneur)
+    public Card(int type, Couleur color, int value)
+    {
+        Type = type;
+        Color = color;
+        Value = value;
+    }
+
+    public void Activer(GameManager gameManager, int type, Couleur color, int value, Sprite sprite, Utils.ConteneurCarte conteneur)
     {
         this.gameManager = gameManager;
         Type = type;
@@ -26,7 +38,7 @@ public class Card : MonoBehaviour, IComparable
     public void Desactiver()
     {
         Type = -1;
-        Color = -1;
+        Color = Couleur.Neutre;
         Value = -1;
 
         GetComponent<SpriteRenderer>().sprite = null;
@@ -88,8 +100,39 @@ public class Card : MonoBehaviour, IComparable
             GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f);
     }
 
+    /* On peut passer à cette méthode soit un obj de la classe
+    Card ou un GameObject avec un script Card comme compansant.
+    
+    Elle compare les cartes en prenant en compte le pli actuel,
+    et ce même si les cartes ne sont pas dans le pli.*/
     public int CompareTo(object obj)
     {
-        return Color.CompareTo(obj);
+        Card card;
+        try { card = (Card)obj; }
+        catch (Exception e)
+        {
+            try
+            {
+                card = ((GameObject)obj).GetComponent<Card>();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("On ne peut comparer une carte qu'avec une autre carte...");
+            }
+        }
+
+        if (Color == card.Color)
+            return (Value - card.Value);
+        else if (Color == Couleur.Noir)
+            return 1;
+        else if (card.Color == Couleur.Noir)
+            return -1;
+        else if (Color == gameManager.pli.GetComponent<Pli>().couleurDemandee)
+            return 1;
+        else if (card.Color == gameManager.pli.GetComponent<Pli>().couleurDemandee)
+            return -1;
+        // Dans le cas où les 2 cartes ne sont ni noirs ni de la couleur demandée il y a égalité
+        else
+            return 0;
     }
 }

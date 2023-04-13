@@ -5,6 +5,11 @@ using UnityEngine.UIElements;
 
 public class TableauCartes : MonoBehaviour
 {
+    public enum State
+    {
+        HandCardsSelection, OtherPlayerCardSelection, Hiden
+    }
+    public State currentState;
     // Start is called before the first frame update
     public GameObject[,] cartes;
     public GameObject cardPrefab;
@@ -30,14 +35,26 @@ public class TableauCartes : MonoBehaviour
                 carte.transform.localScale = new Vector3(0.55f, 0.55f, 1);
                 carte.transform.parent = transform;
 
-                carte.GetComponent<Card>().Activer(gameManager, 0, couleur, valeur + 1, sprite, Utils.ConteneurCarte.TableauCartes);
+                carte.GetComponent<Card>().Activer(gameManager, 0, (Card.Couleur)couleur, valeur + 1, sprite, Utils.ConteneurCarte.TableauCartes);
                 cartes[couleur, valeur] = carte;
             }
         }
     }
 
-    public void InverserVisibilite()
+    public void SetState(State state)
     {
-        gameObject.SetActive(!gameObject.activeInHierarchy);
+        switch (state)
+        {
+            case State.Hiden:
+                gameObject.SetActive(false);
+                break;
+            case State.HandCardsSelection:
+                gameObject.SetActive(true);
+                break;
+            case State.OtherPlayerCardSelection:
+                gameObject.SetActive(true);
+                break;
+        }
+        currentState = state;
     }
 }

@@ -11,27 +11,47 @@ public class GameManager : MonoBehaviour
     public int nbColors;
     public int nbCardsPerColor;
     public int nbJoueurs;
-    private int nbTours;
+    private int nbPlis;
 
     // Start is called before the first frame update
     void Start()
     {
+        InitialiseGame();
+
         // Au départ le joueur commence par sélectionner ses cartes
-        DrawRandomCards(0);
+        DrawRandomCards(40 / nbJoueurs);
 
         // Ensuite, il sélectionne le 1er joueur
+        int premierJoueur = GetPremierJoueur();
 
         // Ensuite on rentre dans la boucle.
-        for (int tour = 0; tour < nbTours; tour++)
+        for (int numPli = 0; numPli < nbPlis; numPli++)
         {
-
+            for (int numJoueur = 0; numJoueur < nbJoueurs; numJoueur++)
+            {
+                int currentPlayer = numJoueur + premierJoueur;
+                if (currentPlayer == 0)
+                {
+                    tableauCartes.GetComponent<TableauCartes>().SetState(TableauCartes.State.Hiden);
+                }
+            }
+            // A la fin du pli on met à jour le 1er joueur
+            premierJoueur = (++premierJoueur) % nbJoueurs;
         }
     }
 
     void InitialiseGame()
     {
         nbJoueurs = 3; // A vocation a pouvoir changer
-        nbTours = 40 / nbJoueurs;
+        nbPlis = 40 / nbJoueurs;
+    }
+
+    // Renvoie l'indice du 1er Joueur entre 0(Utilisateur), 1, 2, 3 et 4
+    int GetPremierJoueur()
+    {
+        int premierJoueur = 0;
+        // A coder...
+        return premierJoueur;
     }
 
     private void DrawRandomCards(int nbCards)
@@ -51,7 +71,7 @@ public class GameManager : MonoBehaviour
             Sprite sprite = Resources.Load<Sprite>($"Images/Cartes/{type}{couleur}{valeur + 1}");
 
             GameObject carte = handPanel.GetComponent<HandPanel>().GetFirstFreeSlot();
-            carte.GetComponent<Card>().Activer(this, type, couleur, valeur + 1, sprite, Utils.ConteneurCarte.HandPanel);
+            carte.GetComponent<Card>().Activer(this, type, (Card.Couleur)couleur, valeur + 1, sprite, Utils.ConteneurCarte.HandPanel);
             tableauCartes.GetComponent<TableauCartes>().cartes[couleur, valeur].GetComponent<Card>().Desactiver();
         }
     }
@@ -60,7 +80,8 @@ public class GameManager : MonoBehaviour
         // Cliquer sur 'espace' pour inverser la visibilité du tableau de cartes 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            tableauCartes.GetComponent<TableauCartes>().InverserVisibilite();
+            TableauCartes t = tableauCartes.GetComponent<TableauCartes>();
+            t.SetState((t.currentState == TableauCartes.State.Hiden) ? TableauCartes.State.HandCardsSelection : TableauCartes.State.Hiden);
         }
         // Cliquer sur 'r' pour vider le pli afin de pouvoir rejouer d'autres cartes
         if (Input.GetKeyDown(KeyCode.R))
