@@ -10,6 +10,16 @@ public class Card : MonoBehaviour, IComparable
         Neutre = -1, Noir = 0, Bleu = 1, Jaune = 2, Rose = 3
     }
 
+    public enum ConteneurCarte
+    {
+        TableauCartes, HandPanel, Pli, CommunicationPanel, Defause, AutreJoueur
+    }
+
+    public enum Communication
+    {
+        Rien,Seul,Haut,Bas
+    }
+
     public int Type { get; private set; }
     public Couleur Color { get; private set; }
     public int Value { get; private set; }
@@ -40,21 +50,16 @@ public class Card : MonoBehaviour, IComparable
         Type = -1;
         Color = Couleur.Neutre;
         Value = -1;
-    public int Color { get; } = 1;
-    public int Number { get; } = 1;
-
-    public Card(int color, int number)
-    {
-        Color = color;
-        Number = number;
+        GetComponent<SpriteRenderer>().sprite = null;
+        Activee = false;
     }
 
     public bool IsPlayable()
     {
         //List<Card> Hand = transform.parent.GetComponent<HandPanel>().Hand;
         List<Card> Hand = new List<Card>();
-        int CouleurDuPli = GameObject.Find("Pli").GetComponent<GameRules>().CouleurDuPliActuel;
-        if (CouleurDuPli == -1)   //CouleurDuPli = -1 signifie que il n'y a aucun couleur au pli actuel donc pas de carte jouée à ce pli
+        Couleur CouleurDuPli = Couleur(GameObject.Find("Pli").GetComponent<GameRules>().CouleurDuPliActuel);
+        if (CouleurDuPli == Couleur.Neutre)   //Neutre signifie que il n'y a aucun couleur au pli actuel donc pas de carte jouée à ce pli
             return true;
         else
         {
@@ -73,12 +78,11 @@ public class Card : MonoBehaviour, IComparable
         }
     }
 
-    //deuxième argument temporaire pour éviter les erreurs de compilations
-    public bool HandHoldColor(int Couleur, List<Card> Hand)
+    public bool HandHoldColor(Couleur couleur, List<Card> Hand)
     {
         foreach (Card Carte in Hand)
         {
-            if (Color == Couleur)
+            if (Color == couleur)
             {
                 return true;
             }
@@ -86,56 +90,55 @@ public class Card : MonoBehaviour, IComparable
         return false;
     }
 
-        GetComponent<SpriteRenderer>().sprite = null;
-        Activee = false;
-    }
     //deux premiers arguments temporaire pour éviter les erreurs de compilations
-    public string AvailableCommunication(int[] MaxParCouleur, int[] MinParCouleur, Card Carte) //changer argument Carte en fonction de l'endroit où on dois placer la fonnction, si dans carte retirer totalement l'argument
+    public Communication AvailableCommunication(int[] MaxParCouleur, int[] MinParCouleur, Card Carte) //changer argument Carte en fonction de l'endroit où on dois placer la fonnction, si dans carte retirer totalement l'argument
     {
         //
         // Ordre des couleurs :  Bleu, Jaune, Rose
         int IndiceCouleur = Carte.Color - 1; //on réduit de 1 pour que ça passe dans le tableau
         if (IndiceCouleur == -1) //si c'est une carte noir
-            return "";
+            return Communication.Rien;
         else
         {
-            if (Carte.Number == MaxParCouleur[IndiceCouleur]) //si carte est la carte du haut
+            if (Carte.Value == MaxParCouleur[IndiceCouleur]) //si carte est la carte du haut
             {
-                if (Carte.Number == MinParCouleur[IndiceCouleur]) //si carte est la carte du bas
-                    return "Milieu";    //la carte est la plus haute et la plus basse donc la seul
+                if (Carte.Value == MinParCouleur[IndiceCouleur]) //si carte est la carte du bas
+                    return Communication.Seul;    //la carte est la plus haute et la plus basse donc la seul
                 else
-                    return "Haut";
+                    return Communication.Haut;
             }
             else
             {
-                if (Carte.Number == MinParCouleur[IndiceCouleur]) // si carte est la carte du bas
-                    return "Bas";
+                if (Carte.Value == MinParCouleur[IndiceCouleur]) // si carte est la carte du bas
+                    return Communication.Bas;
                 else
-                    return "";
+                    return Communication.Rien;
             }
         }
     }
     void OnMouseDown()
     {
-        if (IsPlayable())
+        if (Activee)
         {
-            if (Activee)
-        {
-            switch (conteneur)
+            if (IsPlayable())
             {
-                case Utils.ConteneurCarte.HandPanel:
-                    Play();
-                    break;
-                case Utils.ConteneurCarte.TableauCartes:
-                    AjouterDansLaMain();
-                    break;
+                switch (conteneur)
+                {
+                    case Utils.ConteneurCarte.HandPanel:
+                        Play();
+                        break;
+                    case Utils.ConteneurCarte.TableauCartes:
+                        AjouterDansLaMain();
+                        break;
+                }
             }
         }
     }
+
     void Play()
     {
         Pli pli = gameManager.pli.GetComponent<Pli>();
-            GameObject slot = pli.GetRandomFreeSlot();
+        GameObject slot = pli.GetRandomFreeSlot();
         if (slot != null)
         {
             slot.GetComponent<Card>().Activer(gameManager, Type, Color, Value, GetComponent<SpriteRenderer>().sprite, Utils.ConteneurCarte.Pli);
@@ -153,17 +156,17 @@ public class Card : MonoBehaviour, IComparable
         HandPanel handPanel = gameManager.handPanel.GetComponent<HandPanel>();
         GameObject slot = handPanel.GetFirstFreeSlot();
         if (slot != null)
-            {
-                slot.GetComponent<Card>().Activer(gameManager, Type, Color, Value, GetComponent<SpriteRenderer>().sprite, Utils.ConteneurCarte.HandPanel);
-                Desactiver();
-            }
-            else
-            {
-                // Faire apparaître une dddfenêtre pour le message d'erreur
-                Debug.Log("Il n'y a plus de slot disponible dans la main");
-                pli.GetComponent<GameRules>().CardPlayed.Add(this);
-            }
+        {
+            slot.GetComponent<Card>().Activer(gameManager, Type, Color, Value, GetComponent<SpriteRenderer>().sprite, Utils.ConteneurCarte.HandPanel);
+            Desactiver();
         }
+        else
+        {
+            // Faire apparaître une dddfenêtre pour le message d'erreur
+            Debug.Log("Il n'y a plus de slot disponible dans la main");
+            pli.GetComponent<GameRules>().CardPlayed.Add(this);
+        }
+        
     }
 
     void OnMouseEnter()
