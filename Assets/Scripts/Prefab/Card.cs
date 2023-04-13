@@ -14,7 +14,7 @@ public class Card : MonoBehaviour
         Number = number;
     }
 
-    public bool PlayableCard()
+    public bool IsPlayable()
     {
         //List<Card> Hand = transform.parent.GetComponent<HandPanel>().Hand;
         List<Card> Hand = new List<Card>();
@@ -79,7 +79,7 @@ public class Card : MonoBehaviour
     }
     void OnMouseDown()
     {
-        if (PlayableCard())
+        if (IsPlayable())
         {
             int slotIndex = 1;
             GameObject slot = GameObject.Find($"Slot{slotIndex}");

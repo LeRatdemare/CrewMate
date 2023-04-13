@@ -5,7 +5,7 @@ using UnityEngine;
 public class GameRules : MonoBehaviour
 {
     //le choix de comment obtenir la couleur est à réfléchir
-    public List<Card> CardPlayed = new List<Card>();
+    public List<Card> CardsPlayed = new List<Card>();
     private int couleurDuPliActuel;
     public int CouleurDuPliActuel
     {
@@ -15,16 +15,16 @@ public class GameRules : MonoBehaviour
             if (value == -1)
                 couleurDuPliActuel = value;
             else
-                if (CardPlayed.Count == 0) couleurDuPliActuel = value;
+                if (CardsPlayed.Count == 0) couleurDuPliActuel = value;
         }
     }
 
     public Card CarteGaganteDuPli()
     {
-        Card WinningCard = CardPlayed[0];
-        for (int i = 1; i < CardPlayed.Count; i++)
+        Card WinningCard = CardsPlayed[0];
+        for (int i = 1; i < CardsPlayed.Count; i++)
         {
-            WinningCard = CardChallenge(WinningCard, CardPlayed[i]);
+            WinningCard = CardChallenge(WinningCard, CardsPlayed[i]);
         }
         return WinningCard;
     }
