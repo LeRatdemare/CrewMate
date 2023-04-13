@@ -41,3 +41,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Cards
+    uniqueID: 4233010473
+    locked: 0
+  - name: Popup
+    uniqueID: 3703192909
+    locked: 0
