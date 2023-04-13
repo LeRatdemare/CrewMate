@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    TheCrewGame theCrewGame;
     public GameObject handPanel;
     public GameObject tableauCartes;
     public GameObject pli;
@@ -16,10 +17,8 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        InitialiseGame();
-
         // Au départ le joueur commence par sélectionner ses cartes
-        DrawRandomCards(40 / nbJoueurs);
+        InitialiseGame();
 
         // Ensuite, il sélectionne le 1er joueur
         int premierJoueur = GetPremierJoueur();
@@ -42,8 +41,13 @@ public class GameManager : MonoBehaviour
 
     void InitialiseGame()
     {
+        theCrewGame = GetComponent<TheCrewGame>();
         nbJoueurs = 3; // A vocation a pouvoir changer
         nbPlis = 40 / nbJoueurs;
+
+        DrawRandomCards(40 / nbJoueurs); // Le joueur devra sélectionner ses cartes à la place
+        // Puis le 1er joueur...
+        // Puis la tâche, et le joueur qui doit la faire
     }
 
     // Renvoie l'indice du 1er Joueur entre 0(Utilisateur), 1, 2, 3 et 4
