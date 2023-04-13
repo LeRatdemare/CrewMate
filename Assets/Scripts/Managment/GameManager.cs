@@ -5,31 +5,50 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject cardPrefab;
-    private List<GameObject> cards;
-    [SerializeField] public int nbColors;
-    [SerializeField] public int nbCardsPerColor;
+    public GameObject handPanel;
+    public GameObject tableauCartes;
+    public GameObject pli;
+    public int nbColors;
+    public int nbCardsPerColor;
 
     // Start is called before the first frame update
     void Start()
     {
-        cards = DrawRandomCards(7);
+        DrawRandomCards(14);
     }
 
-    private List<GameObject> DrawRandomCards(int nbCards)
+    private void DrawRandomCards(int nbCards)
     {
-        List<GameObject> rndCards = new List<GameObject>();
         for (int i = 0; i < nbCards; i++)
         {
-            int color = Random.Range(1, 3); // On génère au hasard une couleur excepté les noirs
-            int cardValue = Random.Range(1, 9); // Une génère la valeur de la carte
-            Sprite sprite = Resources.Load<Sprite>($"Images/Cartes/0{color}{cardValue}");
-            Vector3 pos = new Vector3(1.7f * i - 9, -3.5f, 0);
-            rndCards.Add(Instantiate(cardPrefab, pos, Quaternion.identity));
-            rndCards[i].GetComponent<SpriteRenderer>().sprite = sprite;
-            rndCards[i].transform.localScale = new Vector3(0.55f, 0.55f, 1);
-            rndCards[i].transform.parent = GameObject.Find("HandPanel").transform;
+            int couleur;
+            int valeur;
+            GameObject cartePiochee;
+            do
+            {
+                couleur = Random.Range(0, 4); // On génère au hasard une couleur excepté les noirs
+                valeur = Random.Range(0, 9); // Une génère la valeur de la carte
+                cartePiochee = tableauCartes.GetComponent<TableauCartes>().cartes[couleur, valeur];
+            } while (cartePiochee == null || !cartePiochee.GetComponent<Card>().Activee);
+            Sprite sprite = Resources.Load<Sprite>($"Images/Cartes/0{couleur}{valeur + 1}");
+
+            GameObject carte = handPanel.GetComponent<HandPanel>().GetFirstFreeSlot();
+            carte.GetComponent<Card>().Activer(this, sprite, Utils.ConteneurCarte.HandPanel);
+            tableauCartes.GetComponent<TableauCartes>().cartes[couleur, valeur].GetComponent<Card>().Desactiver();
         }
-        return rndCards;
+    }
+    void Update()
+    {
+        // Cliquer sur 'espace' pour inverser la visibilité du tableau de cartes 
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            tableauCartes.GetComponent<TableauCartes>().InverserVisibilite();
+        }
+        // Cliquer sur 'r' pour vider le pli afin de pouvoir rejouer d'autres cartes
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            pli.GetComponent<Pli>().ResetPli();
+        }
+
     }
 }
