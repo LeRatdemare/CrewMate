@@ -14,8 +14,9 @@ public class Card : MonoBehaviour
         Number = number;
     }
 
-    public bool PlayableCard(Card[] Main)
+    public bool PlayableCard()
     {
+        Card?[] Main = GetComponentInParent<
         int Atout = GameObject.Find("Pli").GetComponent<GameRules>().AtoutActuel;
         if (Atout == -1)   //Atout = -1 signifie que il n'y a aucun atout actuel donc pas de carte jouée à ce pli
             return true;
