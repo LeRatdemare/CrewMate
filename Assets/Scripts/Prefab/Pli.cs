@@ -13,10 +13,10 @@ public class Pli : MonoBehaviour
         get { return couleurDemandee; }
         set
         {
-            if (value == -1)
+            if (value == Card.Couleur.Neutre)
                 couleurDemandee = value;
             else
-                if (CardsPlayed.Count == 0) couleurDuPliActuel = value;
+                if (CardsPlayed.Count == 0) couleurDemandee = value;
         }
     }
     public List<Card> CardsPlayed;
@@ -32,7 +32,7 @@ public class Pli : MonoBehaviour
         {
             transform.GetChild(i).GetComponent<Card>().Desactiver();
         }
-        CouleurDemandee=-1;
+        CouleurDemandee = Card.Couleur.Neutre;
     }
 
     public GameObject GetRandomFreeSlot()
@@ -78,7 +78,7 @@ public class Pli : MonoBehaviour
     {
         if (Champion.Color == Challenger.Color)   //si les couleurs sont les mêmes,
         {
-            if (Champion.Number > Challenger.Number) //il suffit de comparer les nombres.
+            if (Champion.Value > Challenger.Value) //il suffit de comparer les nombres.
                 return Champion;
             else
                 return Challenger;

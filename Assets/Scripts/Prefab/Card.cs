@@ -17,14 +17,14 @@ public class Card : MonoBehaviour, IComparable
 
     public enum Communication
     {
-        Rien,Seul,Haut,Bas
+        Rien, Seul, Haut, Bas
     }
 
     public int Type { get; private set; }
     public Couleur Color { get; private set; }
     public int Value { get; private set; }
     private bool selected;
-    private Utils.ConteneurCarte conteneur;
+    private ConteneurCarte conteneur;
     private GameManager gameManager;
     public bool Activee { get; private set; } = false;
 
@@ -35,7 +35,7 @@ public class Card : MonoBehaviour, IComparable
         Value = value;
     }
 
-    public void Activer(GameManager gameManager, int type, Couleur color, int value, Sprite sprite, Utils.ConteneurCarte conteneur)
+    public void Activer(GameManager gameManager, int type, Couleur color, int value, Sprite sprite, ConteneurCarte conteneur)
     {
         this.gameManager = gameManager;
         Type = type;
@@ -58,7 +58,7 @@ public class Card : MonoBehaviour, IComparable
     {
         //List<Card> Hand = transform.parent.GetComponent<HandPanel>().Hand;
         List<Card> Hand = new List<Card>();
-        Couleur CouleurDuPli = Couleur(GameObject.Find("Pli").GetComponent<GameRules>().CouleurDuPliActuel);
+        Couleur CouleurDuPli = (Couleur)GameObject.Find("Pli").GetComponent<Pli>().CouleurDemandee;
         if (CouleurDuPli == Couleur.Neutre)   //Neutre signifie que il n'y a aucun couleur au pli actuel donc pas de carte jouée à ce pli
             return true;
         else
@@ -95,7 +95,7 @@ public class Card : MonoBehaviour, IComparable
     {
         //
         // Ordre des couleurs :  Bleu, Jaune, Rose
-        int IndiceCouleur = Carte.Color - 1; //on réduit de 1 pour que ça passe dans le tableau
+        int IndiceCouleur = Carte.Color - (Couleur)1; //on réduit de 1 pour que ça passe dans le tableau
         if (IndiceCouleur == -1) //si c'est une carte noir
             return Communication.Rien;
         else
@@ -124,10 +124,10 @@ public class Card : MonoBehaviour, IComparable
             {
                 switch (conteneur)
                 {
-                    case Utils.ConteneurCarte.HandPanel:
+                    case ConteneurCarte.HandPanel:
                         Play();
                         break;
-                    case Utils.ConteneurCarte.TableauCartes:
+                    case ConteneurCarte.TableauCartes:
                         AjouterDansLaMain();
                         break;
                 }
@@ -141,9 +141,8 @@ public class Card : MonoBehaviour, IComparable
         GameObject slot = pli.GetRandomFreeSlot();
         if (slot != null)
         {
-            slot.GetComponent<Card>().Activer(gameManager, Type, Color, Value, GetComponent<SpriteRenderer>().sprite, Utils.ConteneurCarte.Pli);
-            GameObject pli = GameObject.Find("Pli");
-                Desactiver();
+            slot.GetComponent<Card>().Activer(gameManager, Type, Color, Value, GetComponent<SpriteRenderer>().sprite, ConteneurCarte.Pli);
+            Desactiver();
         }
         else
         {
@@ -157,26 +156,25 @@ public class Card : MonoBehaviour, IComparable
         GameObject slot = handPanel.GetFirstFreeSlot();
         if (slot != null)
         {
-            slot.GetComponent<Card>().Activer(gameManager, Type, Color, Value, GetComponent<SpriteRenderer>().sprite, Utils.ConteneurCarte.HandPanel);
+            slot.GetComponent<Card>().Activer(gameManager, Type, Color, Value, GetComponent<SpriteRenderer>().sprite, ConteneurCarte.HandPanel);
             Desactiver();
         }
         else
         {
             // Faire apparaître une dddfenêtre pour le message d'erreur
             Debug.Log("Il n'y a plus de slot disponible dans la main");
-            pli.GetComponent<GameRules>().CardPlayed.Add(this);
         }
-        
+
     }
 
     void OnMouseEnter()
     {
-        if (conteneur != Utils.ConteneurCarte.Pli)
+        if (conteneur != ConteneurCarte.Pli)
             GetComponent<SpriteRenderer>().color = new Color(0.9f, 0.9f, 0.9f, 0.7f);
     }
     void OnMouseExit()
     {
-        if (conteneur != Utils.ConteneurCarte.Pli)
+        if (conteneur != ConteneurCarte.Pli)
             GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f);
     }
 

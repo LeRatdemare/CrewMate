@@ -12,7 +12,6 @@ public class Joueur : MonoBehaviour
     void Start()
     {
         transform.GetChild(0).GetComponent<TextMesh>().text = $"Joueur {numero}";
-
         if (numero == 2) Activer(); // Temporaire pour le test
     }
 

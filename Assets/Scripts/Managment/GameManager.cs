@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    TheCrewGame theCrewGame;
+    public TheCrewGame theCrewGame;
     public GameObject handPanel;
     public GameObject tableauCartes;
     public GameObject pli;
@@ -75,7 +75,7 @@ public class GameManager : MonoBehaviour
             Sprite sprite = Resources.Load<Sprite>($"Images/Cartes/{type}{couleur}{valeur + 1}");
 
             GameObject carte = handPanel.GetComponent<HandPanel>().GetFirstFreeSlot();
-            carte.GetComponent<Card>().Activer(this, type, (Card.Couleur)couleur, valeur + 1, sprite, Utils.ConteneurCarte.HandPanel);
+            carte.GetComponent<Card>().Activer(this, type, (Card.Couleur)couleur, valeur + 1, sprite, Card.ConteneurCarte.HandPanel);
             tableauCartes.GetComponent<TableauCartes>().cartes[couleur, valeur].GetComponent<Card>().Desactiver();
         }
     }
