@@ -18,4 +18,14 @@ public class HandPanel : MonoBehaviour
         }
         return null;
     }
+    public int GetCardsCount()
+    {
+        int cardsCount = 0;
+        for (int i = 0; i < nbSlots; i++)
+        {
+            if (transform.GetChild(i).GetComponent<Card>().Activee)
+                cardsCount++;
+        }
+        return cardsCount;
+    }
 }

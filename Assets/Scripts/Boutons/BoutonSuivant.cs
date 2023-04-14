@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class BoutonSuivant : MonoBehaviour
 {
     TheCrewGame theCrewGame;
@@ -13,9 +14,13 @@ public class BoutonSuivant : MonoBehaviour
     }
     public void OnClick()
     {
-        switch (theCrewGame.phase)
+        switch (theCrewGame.GamePhase)
         {
             case TheCrewGame.Phase.UserCardsSelection:
+                if (gameManager.handPanel.GetCardsCount() == theCrewGame.NbPlis)
+                    theCrewGame.GamePhase = TheCrewGame.Phase.FirstPlayerSelection;
+                else
+                    return; // Appeler la popup message "Vous n'avez pas sélectionné toutes vos cartes"
                 break;
             case TheCrewGame.Phase.FirstPlayerSelection:
                 break;

@@ -1478,6 +1478,8 @@ MonoBehaviour:
   nbColors: 4
   nbCardsPerColor: 9
   nbJoueurs: 3
+  timedMessagePopupPrefab: {fileID: 0}
+  timedMessagePopup: {fileID: 0}
 --- !u!114 &1948504955
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1490,7 +1492,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbbb222deade75d458d3949043caea50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  phase: 0
 --- !u!1 &2003573492
 GameObject:
   m_ObjectHideFlags: 0
