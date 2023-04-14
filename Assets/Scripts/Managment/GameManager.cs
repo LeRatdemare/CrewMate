@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
         nbJoueurs = 3; // A vocation a pouvoir changer
         nbPlis = 40 / nbJoueurs;
 
-        DrawRandomCards(40 / nbJoueurs); // Le joueur devra sélectionner ses cartes à la place
+        DrawRandomCards(10); // Le joueur devra sélectionner ses cartes à la place
         // Puis le 1er joueur...
         // Puis la tâche, et le joueur qui doit la faire
     }
