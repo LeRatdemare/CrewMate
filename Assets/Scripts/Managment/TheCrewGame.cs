@@ -18,13 +18,7 @@ public class TheCrewGame : MonoBehaviour
         get { return gamePhase; }
         set
         {
-            switch (value)
-            {
-                case Phase.FirstPlayerSelection:
-                    // Ouvrir la popup de sélection du 1er joueur
-                    break;
-            }
-            gamePhase = value;
+            gamePhase = SwitchPhase(value);
         }
     }
 
@@ -40,10 +34,10 @@ public class TheCrewGame : MonoBehaviour
         NbPlis = NbCardsInGame / NbPlayers;
     }
 
-    void SwitchPhase(Phase phase)
+    // Renvoie la nouvelle phase effective
+    Phase SwitchPhase(Phase phase)
     {
-        this.GamePhase = phase;
-
+        // A implementer
         switch (phase)
         {
             case Phase.UserCardsSelection:
@@ -57,5 +51,6 @@ public class TheCrewGame : MonoBehaviour
             case Phase.OtherPlayerPlaying:
                 break;
         }
+        return phase;
     }
 }

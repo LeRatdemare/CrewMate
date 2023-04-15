@@ -6,7 +6,7 @@ using TMPro;
 public class TimedMessagePopup : MonoBehaviour
 {
     GameManager gameManager;
-    public float timeBeforeDeath = 2; // Temps avant disparition en secondes
+    public float timeBeforeDeath; // Temps avant disparition en secondes
     float lifeTime = 0;
     public bool Visible { get; private set; } = false;
 
@@ -19,10 +19,9 @@ public class TimedMessagePopup : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // SetMessage(string.Format("{0:0.00}", lifeTime)); // Pour tester la popup
         lifeTime += Time.deltaTime;
-        SetMessage(string.Format("{0:0.00}", lifeTime));
-
-        if (lifeTime > timeBeforeDeath) SetVisible(false);
+        if (lifeTime > timeBeforeDeath) SetActive(false);
     }
     public void AttachToCanvas(Canvas canvas)
     {
@@ -31,17 +30,17 @@ public class TimedMessagePopup : MonoBehaviour
         gameObject.transform.localScale = new Vector3(1f, 1f, 1f);
     }
 
-    public void SetMessage(string message)
-    {
-        TextMeshProUGUI tmp = transform.GetChild(1).GetComponent<TextMeshProUGUI>(); // On récupère le message de la popup
-        tmp.SetText(message);
-    }
     public void SetTitle(string title)
     {
         TextMeshProUGUI tmp = transform.GetChild(0).GetComponent<TextMeshProUGUI>(); // On récupère le titre de la popup
         tmp.SetText(title);
     }
-    public void SetVisible(bool visible)
+    public void SetMessage(string message)
+    {
+        TextMeshProUGUI tmp = transform.GetChild(1).GetComponent<TextMeshProUGUI>(); // On récupère le message de la popup
+        tmp.SetText(message);
+    }
+    public void SetActive(bool visible)
     {
         gameObject.SetActive(visible);
         Visible = visible;

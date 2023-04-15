@@ -17,10 +17,21 @@ public class BoutonSuivant : MonoBehaviour
         switch (theCrewGame.GamePhase)
         {
             case TheCrewGame.Phase.UserCardsSelection:
-                if (gameManager.handPanel.GetCardsCount() == theCrewGame.NbPlis)
+                int handSize = gameManager.handPanel.GetCardsCount();
+                int nbCardsToDraw = theCrewGame.NbPlis;
+                if (handSize == nbCardsToDraw)
+                {
                     theCrewGame.GamePhase = TheCrewGame.Phase.FirstPlayerSelection;
+                    gameManager.FirstPlayerSelectionPopup.SetActive(true);
+                }
                 else
-                    return; // Appeler la popup message "Vous n'avez pas sélectionné toutes vos cartes"
+                {
+                    // Appeler la popup message "Vous n'avez pas sélectionné toutes vos cartes"
+                    gameManager.TimedMessagePopup.SetTitle("==Erreur=="); // La 1ère fois qu'on clique cette méthode ne marche pas...
+                    gameManager.TimedMessagePopup.SetMessage($"Vous n'avez pas sélectionné toutes vos cartes...\nVous en avez sélectionné {handSize} au lieu de {nbCardsToDraw}.");
+                    gameManager.TimedMessagePopup.timeBeforeDeath = 7;
+                    gameManager.TimedMessagePopup.SetActive(true);
+                }
                 break;
             case TheCrewGame.Phase.FirstPlayerSelection:
                 break;
@@ -31,5 +42,6 @@ public class BoutonSuivant : MonoBehaviour
             case TheCrewGame.Phase.OtherPlayerPlaying:
                 break;
         }
+        Debug.Log($"Etape suivante, phase actuelle : {theCrewGame.GamePhase}");
     }
 }

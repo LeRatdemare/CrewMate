@@ -14,13 +14,16 @@ public class FirstPlayerSelectionPopup : MonoBehaviour
         Player1Button = transform.GetChild(1).GetComponent<FirstPlayerSelectionButton>();
         Player2Button = transform.GetChild(2).GetComponent<FirstPlayerSelectionButton>();
         Player3Button = transform.GetChild(3).GetComponent<FirstPlayerSelectionButton>();
-
-        gameObject.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
 
+    }
+
+    public void SetActive(bool active)
+    {
+        gameObject.SetActive(active);
     }
 }

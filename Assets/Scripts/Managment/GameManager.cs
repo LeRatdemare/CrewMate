@@ -15,8 +15,8 @@ public class GameManager : MonoBehaviour
     private int nbPlis;
 
     public GameObject timedMessagePopupPrefab;
-    private TimedMessagePopup timedMessagePopup;
-    private FirstPlayerSelectionPopup firstPlayerSelectionPopup;
+    public TimedMessagePopup TimedMessagePopup { get; private set; }
+    public FirstPlayerSelectionPopup FirstPlayerSelectionPopup { get; private set; }
 
     // Start is called before the first frame update
     void Start()
@@ -56,12 +56,13 @@ public class GameManager : MonoBehaviour
         pli = GameObject.Find("Pli").GetComponent<Pli>();
 
         // On prépare les popups
-        timedMessagePopup = Instantiate(timedMessagePopupPrefab, transform.position, Quaternion.identity).GetComponent<TimedMessagePopup>();
-        timedMessagePopup.AttachToCanvas(GameObject.Find("Canvas").GetComponent<Canvas>());
-        timedMessagePopup.SetVisible(false);
+        TimedMessagePopup = Instantiate(timedMessagePopupPrefab, transform.position, Quaternion.identity).GetComponent<TimedMessagePopup>();
+        TimedMessagePopup.AttachToCanvas(GameObject.Find("Canvas").GetComponent<Canvas>());
+        TimedMessagePopup.SetActive(false);
+        FirstPlayerSelectionPopup = GameObject.Find("FirstPlayerSelectionPopup").GetComponent<FirstPlayerSelectionPopup>();
+        FirstPlayerSelectionPopup.SetActive(false);
 
-
-        DrawRandomCards(10); // Le joueur devra sélectionner ses cartes à la place
+        DrawRandomCards(0); // Le joueur devra sélectionner ses cartes à la place
         // Puis le 1er joueur...
         // Puis la tâche, et le joueur qui doit la faire
     }
@@ -107,9 +108,9 @@ public class GameManager : MonoBehaviour
         {
             pli.GetComponent<Pli>().ResetPli();
         }
-        if (Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            timedMessagePopup.SetVisible(true);
+            TimedMessagePopup.SetActive(false);
         }
     }
 }
