@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
 
     public GameObject timedMessagePopupPrefab;
     private TimedMessagePopup timedMessagePopup;
+    private FirstPlayerSelectionPopup firstPlayerSelectionPopup;
 
     // Start is called before the first frame update
     void Start()
@@ -44,12 +45,21 @@ public class GameManager : MonoBehaviour
 
     void InitialiseGame()
     {
+        // On prépare les données du jeu
+        nbJoueurs = 3; // A vocation a pouvoir changer
+        nbPlis = 40 / nbJoueurs;
+
+        // On prépare les scripts related
         theCrewGame = GetComponent<TheCrewGame>();
         tableauCartes = GameObject.Find("TableauCartes").GetComponent<TableauCartes>();
         handPanel = GameObject.Find("HandPanel").GetComponent<HandPanel>();
         pli = GameObject.Find("Pli").GetComponent<Pli>();
-        nbJoueurs = 3; // A vocation a pouvoir changer
-        nbPlis = 40 / nbJoueurs;
+
+        // On prépare les popups
+        timedMessagePopup = Instantiate(timedMessagePopupPrefab, transform.position, Quaternion.identity).GetComponent<TimedMessagePopup>();
+        timedMessagePopup.AttachToCanvas(GameObject.Find("Canvas").GetComponent<Canvas>());
+        timedMessagePopup.SetVisible(false);
+
 
         DrawRandomCards(10); // Le joueur devra sélectionner ses cartes à la place
         // Puis le 1er joueur...
@@ -99,15 +109,7 @@ public class GameManager : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.P))
         {
-            if (timedMessagePopup == null)
-            {
-                timedMessagePopup = Instantiate(timedMessagePopupPrefab, transform.position, Quaternion.identity).GetComponent<TimedMessagePopup>();
-                timedMessagePopup.AttachToCanvas(GameObject.Find("Canvas").GetComponent<Canvas>());
-            }
-            else
-            {
-
-            }
+            timedMessagePopup.SetVisible(true);
         }
     }
 }
