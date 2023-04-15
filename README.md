@@ -15,3 +15,6 @@ Chaque fichier correspondant à une carte du jeu sera nommé "XYZ.png" avec :
   - Si Y=3 --> Alors la carte/tâche est rose
 - Z un nombre entre 1 et 9 (inclus)
   - Z correspond simplement à la valeur de la carte
+
+### Contribution
+Merci à Freepik pour les sprites des UI.
