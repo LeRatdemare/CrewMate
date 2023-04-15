@@ -108,6 +108,7 @@ public class GameManager : MonoBehaviour
         {
             pli.GetComponent<Pli>().ResetPli();
         }
+        // Cliquer sur 'ESCAPE' pour faire disparaître la TimedMessagePopup si elle est active
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             TimedMessagePopup.SetActive(false);
