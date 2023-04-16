@@ -10,11 +10,9 @@ public class FirstPlayerSelectionButton : MonoBehaviour
     void Start()
     {
         TextMeshProUGUI tmp = transform.GetChild(0).GetComponent<TextMeshProUGUI>(); // On récupère le message de la popup
-        tmp.SetText($"Player {numPlayer}");
+        tmp.text = (numPlayer == 0) ? "User" : $"Player {numPlayer}";
     }
-
-    // Update is called once per frame
-    void Update()
+    void NextPhase()
     {
 
     }

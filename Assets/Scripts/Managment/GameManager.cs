@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     public GameObject timedMessagePopupPrefab;
     public TimedMessagePopup TimedMessagePopup { get; private set; }
     public FirstPlayerSelectionPopup FirstPlayerSelectionPopup { get; private set; }
+    public BoutonSuivant BoutonSuivant { get; set; }
 
     // Start is called before the first frame update
     void Start()
@@ -54,6 +55,7 @@ public class GameManager : MonoBehaviour
         tableauCartes = GameObject.Find("TableauCartes").GetComponent<TableauCartes>();
         handPanel = GameObject.Find("HandPanel").GetComponent<HandPanel>();
         pli = GameObject.Find("Pli").GetComponent<Pli>();
+        BoutonSuivant = GameObject.Find("BoutonSuivant").GetComponent<BoutonSuivant>();
 
         // On prépare les popups
         TimedMessagePopup = Instantiate(timedMessagePopupPrefab, transform.position, Quaternion.identity).GetComponent<TimedMessagePopup>();
@@ -62,7 +64,7 @@ public class GameManager : MonoBehaviour
         FirstPlayerSelectionPopup = GameObject.Find("FirstPlayerSelectionPopup").GetComponent<FirstPlayerSelectionPopup>();
         FirstPlayerSelectionPopup.SetActive(false);
 
-        DrawRandomCards(0); // Le joueur devra sélectionner ses cartes à la place
+        DrawRandomCards(8); // Le joueur devra sélectionner ses cartes à la place
         // Puis le 1er joueur...
         // Puis la tâche, et le joueur qui doit la faire
     }

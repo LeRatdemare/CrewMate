@@ -13,8 +13,7 @@ public class TimedMessagePopup : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        SetTitle("My Popup");
+
     }
     // Update is called once per frame
     void Update()
@@ -33,12 +32,12 @@ public class TimedMessagePopup : MonoBehaviour
     public void SetTitle(string title)
     {
         TextMeshProUGUI tmp = transform.GetChild(0).GetComponent<TextMeshProUGUI>(); // On récupère le titre de la popup
-        tmp.SetText(title);
+        tmp.text = title;
     }
     public void SetMessage(string message)
     {
         TextMeshProUGUI tmp = transform.GetChild(1).GetComponent<TextMeshProUGUI>(); // On récupère le message de la popup
-        tmp.SetText(message);
+        tmp.text = message;
     }
     public void SetActive(bool visible)
     {
