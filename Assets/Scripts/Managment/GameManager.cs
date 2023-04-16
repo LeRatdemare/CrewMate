@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public class GameManager : MonoBehaviour
     private int nbPlis;
 
     public GameObject timedMessagePopupPrefab;
-    public TimedMessagePopup TimedMessagePopup { get; private set; }
+    private TimedMessagePopup TimedMessagePopup { get; set; }
     public FirstPlayerSelectionPopup FirstPlayerSelectionPopup { get; private set; }
     public BoutonSuivant BoutonSuivant { get; set; }
 
@@ -46,13 +47,14 @@ public class GameManager : MonoBehaviour
 
     void InitialiseGame()
     {
-        // On prépare les données du jeu
+        // On prépare les données du jeu DEPRECATED, a gerer par TheCrewGame
         nbJoueurs = 3; // A vocation a pouvoir changer
         nbPlis = 40 / nbJoueurs;
 
         // On prépare les scripts related
         theCrewGame = GetComponent<TheCrewGame>();
         tableauCartes = GameObject.Find("TableauCartes").GetComponent<TableauCartes>();
+        tableauCartes.SetState(TableauCartes.State.Hiden);
         handPanel = GameObject.Find("HandPanel").GetComponent<HandPanel>();
         pli = GameObject.Find("Pli").GetComponent<Pli>();
         BoutonSuivant = GameObject.Find("BoutonSuivant").GetComponent<BoutonSuivant>();
@@ -64,9 +66,12 @@ public class GameManager : MonoBehaviour
         FirstPlayerSelectionPopup = GameObject.Find("FirstPlayerSelectionPopup").GetComponent<FirstPlayerSelectionPopup>();
         FirstPlayerSelectionPopup.SetActive(false);
 
-        DrawRandomCards(8); // Le joueur devra sélectionner ses cartes à la place
+        DrawRandomCards(8); // Le joueur devra sélectionner ses cartes à la place DEPRECATED a gérer par TheCrewGame
         // Puis le 1er joueur...
         // Puis la tâche, et le joueur qui doit la faire
+
+        // Ensuite on lance la phase
+        theCrewGame.GamePhase = TheCrewGame.Phase.UserCardsSelection;
     }
 
     // Renvoie l'indice du 1er Joueur entre 0(Utilisateur), 1, 2, 3 et 4
@@ -97,6 +102,15 @@ public class GameManager : MonoBehaviour
             carte.GetComponent<Card>().Activer(this, type, (Card.Couleur)couleur, valeur + 1, sprite, Card.ConteneurCarte.HandPanel);
             tableauCartes.cartes[couleur, valeur].GetComponent<Card>().Desactiver();
         }
+    }
+    public void ShowMessagePopup(string msg, int msgDuration, string title = "My popup", TextAlignmentOptions option = TextAlignmentOptions.Left)
+    {
+        TimedMessagePopup.SetTitle(title); // La 1ère fois qu'on clique cette méthode ne marche pas...
+        TimedMessagePopup.SetMessage(msg);
+        TimedMessagePopup.timeBeforeDeath = msgDuration;
+        TimedMessagePopup.SetTextAlign(option);
+
+        TimedMessagePopup.SetActive(true);
     }
     void Update()
     {

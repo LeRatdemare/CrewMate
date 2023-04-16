@@ -8,6 +8,7 @@ public class TheCrewGame : MonoBehaviour
     public int NbCardsInGame { get; private set; }
     public int NbPlayers { get; private set; }
     public int NbPlis { get; private set; }
+    public int currentPlayer;
     public enum Phase
     {
         UserCardsSelection, FirstPlayerSelection, UserPlaying, UserCommunicating, OtherPlayerPlaying
@@ -32,6 +33,9 @@ public class TheCrewGame : MonoBehaviour
         NbCardsInGame = 30;
         NbPlayers = 3;
         NbPlis = NbCardsInGame / NbPlayers;
+
+        // Initialisation des autres variables
+        currentPlayer = -1;
     }
 
     // Renvoie la nouvelle phase effective
@@ -41,6 +45,10 @@ public class TheCrewGame : MonoBehaviour
         switch (phase)
         {
             case Phase.UserCardsSelection:
+                string title = "Selection des cartes";
+                string msg = "Cliquez sur les cartes que vous avez pioché. Une fois que c'est terminé, cliquez sur 'Next' en bas de la page. \nVous pouvez cliquer de nouveau sur les cartes sélectionnées pour les déselectionner.\n\n -ECHAP- pour passer...";
+                gameManager.ShowMessagePopup(msg, 12, title);
+                gameManager.tableauCartes.SetState(TableauCartes.State.HandCardsSelection);
                 break;
             case Phase.FirstPlayerSelection:
                 break;

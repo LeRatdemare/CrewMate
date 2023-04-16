@@ -46,4 +46,9 @@ public class TimedMessagePopup : MonoBehaviour
 
         if (!Visible) lifeTime = 0;
     }
+    public void SetTextAlign(TextAlignmentOptions option)
+    {
+        TextMeshProUGUI message = transform.GetChild(1).GetComponent<TextMeshProUGUI>(); // On récupère le message de la popup
+        message.alignment = option;
+    }
 }
