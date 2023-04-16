@@ -23,27 +23,30 @@ public class Card : MonoBehaviour, IComparable
     public int Type { get; private set; }
     public Couleur Color { get; private set; }
     public int Value { get; private set; }
-    private bool selected;
+    public bool selected;
     private ConteneurCarte conteneur;
     private GameManager gameManager;
+    private TheCrewGame theCrewGame;
     public bool Activee { get; private set; } = false;
 
-    public Card(int type, Couleur color, int value)
+    void Start()
     {
-        Type = type;
-        Color = color;
-        Value = value;
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        theCrewGame = GameObject.Find("GameManager").GetComponent<TheCrewGame>();
     }
 
-    public void Activer(GameManager gameManager, int type, Couleur color, int value, Sprite sprite, ConteneurCarte conteneur)
+    public void Activer(int type, Couleur color, int value, Sprite sprite, ConteneurCarte conteneur)
     {
-        this.gameManager = gameManager;
         Type = type;
         Color = color;
         Value = value;
         GetComponent<SpriteRenderer>().sprite = sprite;
         this.conteneur = conteneur;
         Activee = true;
+    }
+    public void Activer(Card card, ConteneurCarte conteneur)
+    {
+        Activer(card.Type, card.Color, card.Value, card.GetComponent<SpriteRenderer>().sprite, conteneur);
     }
     public void Desactiver()
     {
@@ -120,43 +123,63 @@ public class Card : MonoBehaviour, IComparable
     {
         if (Activee)
         {
-            if (IsPlayable())
+            switch (conteneur)
             {
-                switch (conteneur)
-                {
-                    case ConteneurCarte.HandPanel:
-                        Play();
-                        break;
-                    case ConteneurCarte.TableauCartes:
-                        AjouterDansLaMain();
-                        break;
-                }
+                // Dans le cas où la carte est dans la main, elle n'est pas toujours cliquable
+                case ConteneurCarte.HandPanel:
+                    switch (theCrewGame.GamePhase)
+                    {
+                        // Si le joueur est entrain de choisir ses cartes elle repart dans le tableau
+                        case TheCrewGame.Phase.UserCardsSelection:
+                            RangerDansLeTableau();
+                            break;
+                        case TheCrewGame.Phase.UserPlaying:
+                            Select();
+                            break;
+                        case TheCrewGame.Phase.UserCommunicating:
+                            break;
+                    }
+                    break;
+                case ConteneurCarte.TableauCartes:
+                    AjouterDansLaMain();
+                    break;
+                case ConteneurCarte.Pli:
+                    // A coder...
+                    break;
             }
         }
     }
-
-    void Play()
+    void Select()
     {
-        Pli pli = gameManager.pli.GetComponent<Pli>();
-        GameObject slot = pli.GetRandomFreeSlot();
-        if (slot != null)
-        {
-            slot.GetComponent<Card>().Activer(gameManager, Type, Color, Value, GetComponent<SpriteRenderer>().sprite, ConteneurCarte.Pli);
-            Desactiver();
-        }
-        else
-        {
-            // Faire apparaître une fenêtre pour le message d'erreur
-            Debug.Log("Il n'y a plus de slot disponible dans le pli");
-        }
+        // On déselectionne toutes les cartes
+        gameManager.handPanel.DeselectAllCards();
+
+        // Puis on sélectionne celle qui nous intéresse
+        selected = true;
+        transform.localPosition += Vector3.up * 0.3f;
     }
+    // void Play(int numPlayer)
+    // {
+    //     Pli pli = gameManager.pli.GetComponent<Pli>();
+    //     Card slot = pli.Slots[numPlayer];
+    //     if (slot != null)
+    //     {
+    //         slot.GetComponent<Card>().Activer(Type, Color, Value, GetComponent<SpriteRenderer>().sprite, ConteneurCarte.Pli);
+    //         Desactiver();
+    //     }
+    //     else
+    //     {
+    //         // Faire apparaître une fenêtre pour le message d'erreur
+    //         Debug.Log("Il n'y a plus de slot disponible dans le pli");
+    //     }
+    // }
     void AjouterDansLaMain()
     {
         HandPanel handPanel = gameManager.handPanel.GetComponent<HandPanel>();
         GameObject slot = handPanel.GetFirstFreeSlot();
         if (slot != null)
         {
-            slot.GetComponent<Card>().Activer(gameManager, Type, Color, Value, GetComponent<SpriteRenderer>().sprite, ConteneurCarte.HandPanel);
+            slot.GetComponent<Card>().Activer(Type, Color, Value, GetComponent<SpriteRenderer>().sprite, ConteneurCarte.HandPanel);
             Desactiver();
         }
         else
@@ -165,6 +188,12 @@ public class Card : MonoBehaviour, IComparable
             Debug.Log("Il n'y a plus de slot disponible dans la main");
         }
 
+    }
+    void RangerDansLeTableau()
+    {
+        Card slot = gameManager.tableauCartes.cartes[(int)Color, Value - 1].GetComponent<Card>();
+        slot.Activer(Type, Color, Value, GetComponent<SpriteRenderer>().sprite, ConteneurCarte.TableauCartes);
+        Desactiver();
     }
 
     void OnMouseEnter()

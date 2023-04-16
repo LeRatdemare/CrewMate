@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     private TimedMessagePopup TimedMessagePopup { get; set; }
     public FirstPlayerSelectionPopup FirstPlayerSelectionPopup { get; private set; }
     public BoutonSuivant BoutonSuivant { get; set; }
+    public BoutonCommuniquer BoutonCommuniquer { get; set; }
 
     // Start is called before the first frame update
     void Start()
@@ -58,6 +59,8 @@ public class GameManager : MonoBehaviour
         handPanel = GameObject.Find("HandPanel").GetComponent<HandPanel>();
         pli = GameObject.Find("Pli").GetComponent<Pli>();
         BoutonSuivant = GameObject.Find("BoutonSuivant").GetComponent<BoutonSuivant>();
+        BoutonCommuniquer = GameObject.Find("BoutonCommuniquer").GetComponent<BoutonCommuniquer>();
+        BoutonCommuniquer.SetActive(false);
 
         // On prépare les popups
         TimedMessagePopup = Instantiate(timedMessagePopupPrefab, transform.position, Quaternion.identity).GetComponent<TimedMessagePopup>();
@@ -99,7 +102,7 @@ public class GameManager : MonoBehaviour
             Sprite sprite = Resources.Load<Sprite>($"Images/Cartes/{type}{couleur}{valeur + 1}");
 
             GameObject carte = handPanel.GetFirstFreeSlot();
-            carte.GetComponent<Card>().Activer(this, type, (Card.Couleur)couleur, valeur + 1, sprite, Card.ConteneurCarte.HandPanel);
+            carte.GetComponent<Card>().Activer(type, (Card.Couleur)couleur, valeur + 1, sprite, Card.ConteneurCarte.HandPanel);
             tableauCartes.cartes[couleur, valeur].GetComponent<Card>().Desactiver();
         }
     }

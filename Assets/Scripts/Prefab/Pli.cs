@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Pli : MonoBehaviour
 {
+    public GameManager gameManager;
+    public TheCrewGame theCrewGame;
     public int nbExistingSlots;
     public int nbPlayableSlots;
     public int premierJoueur;
@@ -24,7 +26,8 @@ public class Pli : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        theCrewGame = GameObject.Find("GameManager").GetComponent<TheCrewGame>();
     }
     public void ResetPli()
     {
@@ -35,20 +38,20 @@ public class Pli : MonoBehaviour
         CouleurDemandee = Card.Couleur.Neutre;
     }
 
-    public GameObject GetRandomFreeSlot()
-    {
-        if (GetNbOccupiedSlots() >= nbPlayableSlots) return null;
+    // public GameObject GetRandomFreeSlot()
+    // {
+    //     if (GetNbOccupiedSlots() >= nbPlayableSlots) return null;
 
-        int slotIndex = Random.Range(0, nbExistingSlots);
-        GameObject slot;
-        do
-        {
-            slot = transform.GetChild(slotIndex).gameObject;
-            slotIndex = (slotIndex + 1) % nbExistingSlots;
-        }
-        while (slot.GetComponent<Card>().Activee);
-        return slot;
-    }
+    //     int slotIndex = Random.Range(0, nbExistingSlots);
+    //     GameObject slot;
+    //     do
+    //     {
+    //         slot = transform.GetChild(slotIndex).gameObject;
+    //         slotIndex = (slotIndex + 1) % nbExistingSlots;
+    //     }
+    //     while (slot.GetComponent<Card>().Activee);
+    //     return slot;
+    // }
     public int GetNbOccupiedSlots()
     {
         int nbOccupiedSlots = 0;

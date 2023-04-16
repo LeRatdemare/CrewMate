@@ -28,4 +28,27 @@ public class HandPanel : MonoBehaviour
         }
         return cardsCount;
     }
+    public void DeselectAllCards()
+    {
+        for (int i = 0; i < nbSlots; i++)
+        {
+            GameObject cardObject = transform.GetChild(i).gameObject;
+            if (cardObject.GetComponent<Card>().selected)
+            {
+                cardObject.transform.localPosition += Vector3.down * 0.3f;
+                cardObject.GetComponent<Card>().selected = false;
+            }
+        }
+    }
+    public Card GetSelectedCard()
+    {
+        for (int i = 0; i < nbSlots; i++)
+        {
+            Card card = transform.GetChild(i).GetComponent<Card>();
+            if (card.selected)
+                return card;
+        }
+        // Ne devrait pas arriver
+        throw new System.Exception("La méthode n'a pas été appelée au bon moment car aucune carte n'est sélectionnée.");
+    }
 }
