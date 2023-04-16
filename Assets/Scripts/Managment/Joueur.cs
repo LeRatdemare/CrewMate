@@ -11,7 +11,7 @@ public class Joueur : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        transform.GetChild(0).GetComponent<TextMesh>().text = $"Joueur {numero}";
+        transform.GetChild(0).GetComponent<TextMesh>().text = $"Player {numero}";
         if (numero == 2) Activer(); // Temporaire pour le test
     }
 
