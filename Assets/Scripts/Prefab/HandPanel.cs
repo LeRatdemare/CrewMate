@@ -48,7 +48,7 @@ public class HandPanel : MonoBehaviour
             if (card.selected)
                 return card;
         }
-        // Ne devrait pas arriver
-        throw new System.Exception("La méthode n'a pas été appelée au bon moment car aucune carte n'est sélectionnée.");
+        // Ne devrait pas arriver, seulement si le joueur n'a rien sélectionné
+        return null;
     }
 }

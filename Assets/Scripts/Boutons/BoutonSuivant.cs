@@ -54,17 +54,26 @@ public class BoutonSuivant : MonoBehaviour
                 break;
 
             case TheCrewGame.Phase.UserPlaying:
-                gameManager.BoutonCommuniquer.SetActive(false);
-
                 // On récupère la carte sélectionnée et on la met dans le Slot correspondant du Pli
                 Card selectedCard = gameManager.handPanel.GetSelectedCard();
-                // gameManager.pli.Slots[0].Activer(selectedCard, Card.ConteneurCarte.Pli);
-                gameManager.pli.transform.GetChild(0).GetComponent<Card>().Activer(selectedCard, Card.ConteneurCarte.Pli);
-                selectedCard.Desactiver();
-                // On déselectionne toutes les cartes
-                gameManager.handPanel.DeselectAllCards();
+                // S'il en a sélectionné une on l'ajoute au Slot correspondant du pli
+                if (selectedCard != null)
+                {
+                    gameManager.BoutonCommuniquer.SetActive(false); // A voir si on ne le réutilise pas pour les autres joueurs
+                    gameManager.pli.transform.GetChild(0).GetComponent<Card>().Activer(selectedCard, Card.ConteneurCarte.Pli);
+                    selectedCard.Desactiver();
+                    // On déselectionne toutes les cartes
+                    gameManager.handPanel.DeselectAllCards();
 
-                theCrewGame.GamePhase = TheCrewGame.Phase.OtherPlayerPlaying;
+                    theCrewGame.GamePhase = TheCrewGame.Phase.OtherPlayerPlaying;
+                }
+                // Si il n'a pas sélectionné de carte on le notifie  
+                else
+                {
+                    title = "==Erreur==";
+                    msg = $"C'est à votre tour de jouer, vous n'avez pas encore sélectionné de carte...";
+                    gameManager.ShowMessagePopup(msg, 6, title);
+                }
                 break;
             case TheCrewGame.Phase.UserCommunicating:
                 gameManager.BoutonCommuniquer.SetActive(false);

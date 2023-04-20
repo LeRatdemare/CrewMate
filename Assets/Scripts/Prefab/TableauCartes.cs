@@ -57,4 +57,8 @@ public class TableauCartes : MonoBehaviour
         }
         currentState = state;
     }
+    public void DeselectAllCards()
+    {
+        // A coder
+    }
 }

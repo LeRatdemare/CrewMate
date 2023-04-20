@@ -134,7 +134,7 @@ public class Card : MonoBehaviour, IComparable
                             RangerDansLeTableau();
                             break;
                         case TheCrewGame.Phase.UserPlaying:
-                            Select();
+                            SelectInHand();
                             break;
                         case TheCrewGame.Phase.UserCommunicating:
                             break;
@@ -149,7 +149,7 @@ public class Card : MonoBehaviour, IComparable
             }
         }
     }
-    void Select()
+    void SelectInHand()
     {
         // On déselectionne toutes les cartes
         gameManager.handPanel.DeselectAllCards();
@@ -157,6 +157,10 @@ public class Card : MonoBehaviour, IComparable
         // Puis on sélectionne celle qui nous intéresse
         selected = true;
         transform.localPosition += Vector3.up * 0.3f;
+    }
+    void SelectInTableau()
+    {
+        // A coder...
     }
     // void Play(int numPlayer)
     // {
