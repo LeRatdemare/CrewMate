@@ -19,6 +19,7 @@ public class FirstPlayerSelectionButton : MonoBehaviour
     }
     public void OnClick()
     {
+        // On met à jour les valeurs du dictionnaire des joueurs pour que le 1er joueur ait la valeur 0
         theCrewGame.currentPlayer = numPlayer;
         gameManager.BoutonSuivant.SetActive(true);
         Debug.Log((numPlayer == 0) ? "Vous êtes maintenant le 1er joueur." : $"Le 1er joueur est maintenant le joueur {numPlayer}.");

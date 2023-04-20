@@ -32,12 +32,9 @@ public class HandPanel : MonoBehaviour
     {
         for (int i = 0; i < nbSlots; i++)
         {
-            GameObject cardObject = transform.GetChild(i).gameObject;
-            if (cardObject.GetComponent<Card>().selected)
-            {
-                cardObject.transform.localPosition += Vector3.down * 0.3f;
-                cardObject.GetComponent<Card>().selected = false;
-            }
+            Card card = transform.GetChild(i).GetComponent<Card>();
+            if (card.Selected)
+                card.Selected = false;
         }
     }
     public Card GetSelectedCard()
@@ -45,7 +42,7 @@ public class HandPanel : MonoBehaviour
         for (int i = 0; i < nbSlots; i++)
         {
             Card card = transform.GetChild(i).GetComponent<Card>();
-            if (card.selected)
+            if (card.Selected)
                 return card;
         }
         // Ne devrait pas arriver, seulement si le joueur n'a rien sélectionné

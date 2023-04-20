@@ -23,6 +23,7 @@ public class BoutonSuivant : MonoBehaviour
         // On déclare les variables pour les popups
         string msg;
         string title;
+        Card selectedCard;
         switch (theCrewGame.GamePhase)
         {
             // Si le joueur a sélectionné le bon nombre de cartes, on passe à la phase suivante
@@ -53,19 +54,22 @@ public class BoutonSuivant : MonoBehaviour
                     theCrewGame.GamePhase = TheCrewGame.Phase.OtherPlayerPlaying;
                 break;
 
+            case TheCrewGame.Phase.TasksSelection:
+                // A coder...
+                break;
+
             case TheCrewGame.Phase.UserPlaying:
                 // On récupère la carte sélectionnée et on la met dans le Slot correspondant du Pli
-                Card selectedCard = gameManager.handPanel.GetSelectedCard();
+                selectedCard = gameManager.handPanel.GetSelectedCard();
                 // S'il en a sélectionné une on l'ajoute au Slot correspondant du pli
                 if (selectedCard != null)
                 {
-                    gameManager.BoutonCommuniquer.SetActive(false); // A voir si on ne le réutilise pas pour les autres joueurs
                     gameManager.pli.transform.GetChild(0).GetComponent<Card>().Activer(selectedCard, Card.ConteneurCarte.Pli);
                     selectedCard.Desactiver();
                     // On déselectionne toutes les cartes
                     gameManager.handPanel.DeselectAllCards();
 
-                    theCrewGame.GamePhase = TheCrewGame.Phase.OtherPlayerPlaying;
+                    theCrewGame.NextPlayer();
                 }
                 // Si il n'a pas sélectionné de carte on le notifie  
                 else
@@ -77,14 +81,34 @@ public class BoutonSuivant : MonoBehaviour
                 break;
             case TheCrewGame.Phase.UserCommunicating:
                 gameManager.BoutonCommuniquer.SetActive(false);
+                theCrewGame.NextPlayer();
                 // A coder...
                 break;
             case TheCrewGame.Phase.OtherPlayerPlaying:
                 gameManager.BoutonCommuniquer.SetActive(false);
+
+                // Si le joueur a sélectionné une carte, on la met dans le pli au slot correspondant
+                selectedCard = gameManager.tableauCartes.GetSelectedCard();
+                if (selectedCard != null)
+                {
+                    gameManager.pli.transform.GetChild(theCrewGame.currentPlayer).GetComponent<Card>().Activer(selectedCard, Card.ConteneurCarte.Pli);
+                    selectedCard.Desactiver();
+                    // On déselectionne toutes les cartes
+                    gameManager.tableauCartes.DeselectAllCards();
+                    theCrewGame.NextPlayer();
+                }
+                // Si il n'a pas sélectionné de carte on le notifie  
+                else
+                {
+                    title = "==Erreur==";
+                    msg = $"C'est toujours au joueur {theCrewGame.currentPlayer} de jouer, vous n'avez pas encore sélectionné sa carte...";
+                    gameManager.ShowMessagePopup(msg, 6, title);
+                }
                 // A coder...
                 break;
             case TheCrewGame.Phase.OtherPlayerCommunicating:
                 gameManager.BoutonCommuniquer.SetActive(false);
+                theCrewGame.NextPlayer();
                 // A coder...
                 break;
         }

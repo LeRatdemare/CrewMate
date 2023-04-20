@@ -23,7 +23,39 @@ public class Card : MonoBehaviour, IComparable
     public int Type { get; private set; }
     public Couleur Color { get; private set; }
     public int Value { get; private set; }
-    public bool selected;
+    private bool selected;
+    public bool Selected
+    {
+        get { return selected; }
+        set
+        {
+            switch (conteneur)
+            {
+                case ConteneurCarte.HandPanel:
+                    if (value)
+                    {
+                        // On déselectionne toutes les cartes
+                        gameManager.handPanel.DeselectAllCards();
+                        transform.localPosition += Vector3.up * 0.3f;
+                    }
+                    else
+                        transform.localPosition += Vector3.down * 0.3f;
+                    selected = value;
+                    break;
+                case ConteneurCarte.TableauCartes:
+                    if (value)
+                    {
+                        // On déselectionne toutes les cartes
+                        gameManager.tableauCartes.DeselectAllCards();
+                        transform.Rotate(new Vector3(0, 0, 90));
+                    }
+                    else
+                        transform.Rotate(new Vector3(0, 0, -90));
+                    selected = value;
+                    break;
+            }
+        }
+    }
     private ConteneurCarte conteneur;
     private GameManager gameManager;
     private TheCrewGame theCrewGame;
@@ -134,33 +166,32 @@ public class Card : MonoBehaviour, IComparable
                             RangerDansLeTableau();
                             break;
                         case TheCrewGame.Phase.UserPlaying:
-                            SelectInHand();
+                            Selected = !Selected;
                             break;
                         case TheCrewGame.Phase.UserCommunicating:
                             break;
                     }
                     break;
                 case ConteneurCarte.TableauCartes:
-                    AjouterDansLaMain();
+                    switch (theCrewGame.GamePhase)
+                    {
+                        // Si le joueur est entrain de choisir ses cartes elle repart dans le tableau
+                        case TheCrewGame.Phase.UserCardsSelection:
+                            AjouterDansLaMain();
+                            break;
+                        case TheCrewGame.Phase.OtherPlayerPlaying:
+                            Selected = !Selected;
+                            break;
+                        case TheCrewGame.Phase.OtherPlayerCommunicating:
+                            break;
+                    }
+
                     break;
                 case ConteneurCarte.Pli:
                     // A coder...
                     break;
             }
         }
-    }
-    void SelectInHand()
-    {
-        // On déselectionne toutes les cartes
-        gameManager.handPanel.DeselectAllCards();
-
-        // Puis on sélectionne celle qui nous intéresse
-        selected = true;
-        transform.localPosition += Vector3.up * 0.3f;
-    }
-    void SelectInTableau()
-    {
-        // A coder...
     }
     // void Play(int numPlayer)
     // {
@@ -245,5 +276,12 @@ public class Card : MonoBehaviour, IComparable
         // Dans le cas où les 2 cartes ne sont ni noirs ni de la couleur demandée il y a égalité
         else
             return 0;
+    }
+    /// <summary>On fait le choix de ne comparer que couleur et valeur pour pouvoir comparer avec les tâches.</summary>
+    public override bool Equals(object other)
+    {
+        if (!(other is Card)) return false;
+        Card otherCard = (Card)other;
+        return Value == otherCard.Value && Color == otherCard.Color;
     }
 }

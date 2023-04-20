@@ -6,9 +6,11 @@ using TMPro;
 public class TheCrewGame : MonoBehaviour
 {
     GameManager gameManager;
+    public List<Joueur> Joueurs { get; private set; }
     public int NbCardsInGame { get; private set; }
     public int NbPlayers { get; private set; }
     public int NbPlis { get; private set; }
+    public int NbColors { get; private set; } // Compte le noir
     public int currentPlayer;
 
     public enum Player
@@ -17,7 +19,7 @@ public class TheCrewGame : MonoBehaviour
     }
     public enum Phase
     {
-        UserCardsSelection, FirstPlayerSelection, UserPlaying, UserCommunicating, OtherPlayerPlaying, OtherPlayerCommunicating
+        UserCardsSelection, FirstPlayerSelection, TasksSelection, UserPlaying, UserCommunicating, OtherPlayerPlaying, OtherPlayerCommunicating
     }
     private Phase gamePhase;
     public Phase GamePhase
@@ -33,15 +35,49 @@ public class TheCrewGame : MonoBehaviour
         GamePhase = Phase.UserCardsSelection;
 
         // Valeurs à récupérer dans la classe Valider
+        NbColors = 4;
         NbCardsInGame = 30;
         NbPlayers = 3;
         NbPlis = NbCardsInGame / NbPlayers;
 
         // Initialisation des autres variables
         currentPlayer = -1;
+        Joueurs = new List<Joueur>(); // Initialiser la variable...
+        Joueurs.Add(GameObject.Find("User").GetComponent<Joueur>());
+        for (int i = 1; i < NbPlayers; i++)
+        {
+            Joueurs.Add(GameObject.Find($"Player{i}").GetComponent<JoueurNonUtilisateur>());
+        }
+    }
+    /// <summary>Actualise le currentPlayer et change de phase en fonction (UserPlaying ou OtherPlayerPlaying).</summary>
+    public void NextPlayer()
+    {
+        // On commence par vérifier si le pli est terminé
+        if (gameManager.pli.GetNbOccupiedSlots() == NbPlayers)
+        {
+            // On récupère le vainqueur du pli et les tâches qu'il a complété
+            int winner = gameManager.pli.GetStrongestCardSlotIndex();
+            List<Card> completedTasks = Joueurs[winner].CheckSuccessfulTasks();
+            // On reset le pli et on désigne le vainqueur comme 1er joueur
+            gameManager.pli.ResetPli();
+            currentPlayer = winner;
+
+            // Puis on notifie l'utilisateur des tâches complétées
+            Debug.Log((winner == 0 ? $"Vous avez" : $"Le joueur {winner} a") + $" complété {completedTasks.Count} tâches.");
+        }
+        // Si ce n'est pas le cas, on passe au prochain joueur.
+        else
+        {
+            currentPlayer = (currentPlayer + 1) % NbPlayers;
+        }
+        // Quoiqu'il arrive, on change la phase
+        if (currentPlayer == (int)Player.User) GamePhase = Phase.UserPlaying;
+        else GamePhase = Phase.OtherPlayerPlaying;
+
+        // Si on a fini le pli, alors on vide le pli et on vérifie si la tâche a été réalisée
     }
 
-    // Renvoie la nouvelle phase effective. les vérifications ont été faites quand on appelle cette méthode.
+    /// <summary>Renvoie la nouvelle phase effective. les vérifications ont été faites quand on appelle cette méthode.</summary>
     Phase SwitchPhase(Phase phase)
     {
         // A implementer
@@ -59,6 +95,7 @@ public class TheCrewGame : MonoBehaviour
                 gameManager.FirstPlayerSelectionPopup.SetActive(true); // On active la popup
                 break;
             case Phase.UserPlaying:
+                gameManager.tableauCartes.SetState(TableauCartes.State.Hiden); // On cache le tableau
                 // On annonce au joueur que c'est à lui de jouer
                 title = "Tour de l'utilisateur";
                 msg = $"A toi de jouer !";
