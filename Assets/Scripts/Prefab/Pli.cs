@@ -6,16 +6,14 @@ public class Pli : MonoBehaviour
 {
     public GameManager gameManager;
     public TheCrewGame theCrewGame;
-    public Card.Couleur couleurDemandee;
+    private Card.Couleur couleurDemandee;
     public Card.Couleur CouleurDemandee
     {
         get { return couleurDemandee; }
         set
         {
-            if (value == Card.Couleur.Neutre)
+            if (value == Card.Couleur.Neutre || couleurDemandee == Card.Couleur.Neutre)
                 couleurDemandee = value;
-            else
-                if (cardsPlayed.Count == 0) couleurDemandee = value;
         }
     }
     public List<Card> cardsPlayed;
@@ -25,6 +23,8 @@ public class Pli : MonoBehaviour
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         theCrewGame = GameObject.Find("GameManager").GetComponent<TheCrewGame>();
+
+        CouleurDemandee = Card.Couleur.Neutre;
     }
     public void ResetPli()
     {
@@ -87,8 +87,12 @@ public class Pli : MonoBehaviour
 
     private int CardChallenge(int championIndex, int challengerIndex)
     {
-        Card champion = transform.GetChild(championIndex).GetComponent<Card>();
-        Card challenger = transform.GetChild(challengerIndex).GetComponent<Card>();
+        Card champion;
+        if (championIndex == -1) champion = null;
+        else champion = transform.GetChild(championIndex).GetComponent<Card>();
+        Card challenger;
+        if (challengerIndex == -1) challenger = null;
+        else challenger = transform.GetChild(challengerIndex).GetComponent<Card>();
 
         if (CardChallenge(champion, challenger) == champion) return championIndex;
         else if (CardChallenge(champion, challenger) == challenger) return challengerIndex;
@@ -109,10 +113,16 @@ public class Pli : MonoBehaviour
         }
         else                                //sinon seul la couleur est importante
         {
-            if (challenger.Color == Card.Couleur.Noir) //si le challengeur est noir alors champion 
-                return challenger;        //est de la couleur de l'CouleurDuPli donc le challengeur gagne
-            else                    //sinon challengeur est soit ni noir ni de la couleur de la couleur du pli donc il perd automatiquement
-                return champion;    //ou challengeur est de la couleur de l'CouleurDuPli mais puisque Champion n'est pas de la couleur de Challengeur et que il est soit noir, soit de la couleur de la couleur du pli alors Champion est forcément noir, donc Champion gagne.
+            if (challenger.Color == Card.Couleur.Noir)
+                return challenger;
+            else if (champion.Color == Card.Couleur.Noir)
+                return champion;
+            else if (challenger.Color == CouleurDemandee)
+                return challenger;
+            else if (champion.Color == CouleurDemandee)
+                return champion;
+            else
+                return null;
         }
     }
     public bool IsInPli(Card card)

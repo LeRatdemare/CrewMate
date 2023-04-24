@@ -72,9 +72,6 @@ public class GameManager : MonoBehaviour
         DrawRandomCards(8); // Le joueur devra sélectionner ses cartes à la place DEPRECATED a gérer par TheCrewGame
         // Puis le 1er joueur...
         // Puis la tâche, et le joueur qui doit la faire
-
-        // Ensuite on lance la phase
-        theCrewGame.GamePhase = TheCrewGame.Phase.UserCardsSelection;
     }
 
     // Renvoie l'indice du 1er Joueur entre 0(Utilisateur), 1, 2, 3 et 4

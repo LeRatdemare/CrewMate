@@ -48,9 +48,13 @@ public class Card : MonoBehaviour, IComparable
                         // On déselectionne toutes les cartes
                         gameManager.tableauCartes.DeselectAllCards();
                         transform.Rotate(new Vector3(0, 0, 90));
+                        transform.localScale = new Vector3(transform.localScale.x * 3, transform.localScale.y / 2.5f, transform.localScale.z);
                     }
                     else
+                    {
                         transform.Rotate(new Vector3(0, 0, -90));
+                        transform.localScale = new Vector3(transform.localScale.x / 3, transform.localScale.y * 2.5f, transform.localScale.z);
+                    }
                     selected = value;
                     break;
             }
@@ -75,6 +79,12 @@ public class Card : MonoBehaviour, IComparable
         GetComponent<SpriteRenderer>().sprite = sprite;
         this.conteneur = conteneur;
         Activee = true;
+
+        // On actualise la couleur demandée si la carte est activée dans le pli
+        if (conteneur == ConteneurCarte.Pli)
+        {
+            gameManager.pli.CouleurDemandee = Color;
+        }
     }
     public void Activer(Card card, ConteneurCarte conteneur)
     {
@@ -93,7 +103,7 @@ public class Card : MonoBehaviour, IComparable
     {
         //List<Card> Hand = transform.parent.GetComponent<HandPanel>().Hand;
         List<Card> Hand = new List<Card>();
-        Couleur CouleurDuPli = (Couleur)GameObject.Find("Pli").GetComponent<Pli>().CouleurDemandee;
+        Couleur CouleurDuPli = GameObject.Find("Pli").GetComponent<Pli>().CouleurDemandee;
         if (CouleurDuPli == Couleur.Neutre)   //Neutre signifie que il n'y a aucun couleur au pli actuel donc pas de carte jouée à ce pli
             return true;
         else
@@ -269,9 +279,9 @@ public class Card : MonoBehaviour, IComparable
             return 1;
         else if (card.Color == Couleur.Noir)
             return -1;
-        else if (Color == gameManager.pli.GetComponent<Pli>().couleurDemandee)
+        else if (Color == gameManager.pli.GetComponent<Pli>().CouleurDemandee)
             return 1;
-        else if (card.Color == gameManager.pli.GetComponent<Pli>().couleurDemandee)
+        else if (card.Color == gameManager.pli.GetComponent<Pli>().CouleurDemandee)
             return -1;
         // Dans le cas où les 2 cartes ne sont ni noirs ni de la couleur demandée il y a égalité
         else
