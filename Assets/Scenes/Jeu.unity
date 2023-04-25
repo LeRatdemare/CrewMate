@@ -357,8 +357,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 194107776}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.0064, y: 0.0084, z: 0}
-  m_LocalScale: {x: 2.3638735, y: 1.8794185, z: 1}
+  m_LocalPosition: {x: -0.0064, y: 0.0296, z: 0}
+  m_LocalScale: {x: 2.876365, y: 2.515712, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -932,6 +932,10 @@ PrefabInstance:
       propertyPath: gameManager
       value: 
       objectReference: {fileID: 1948504954}
+    - target: {fileID: 5769293538255067498, guid: 25b84ae6cb101954c906a00704bdae68, type: 3}
+      propertyPath: currentState
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7707253572152791721, guid: 25b84ae6cb101954c906a00704bdae68, type: 3}
       propertyPath: m_Name
       value: TableauCartes
@@ -1087,7 +1091,7 @@ MonoBehaviour:
   pli: {fileID: 2123230406}
   nbColors: 4
   nbCardsPerColor: 9
-  nbJoueurs: 0
+  nbJoueurs: 3
 --- !u!114 &1948504955
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1576,5 +1580,6 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7754395675838626304, guid: c8785feb78de1ed42b23a73a3cd6f30b, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: c8785feb78de1ed42b23a73a3cd6f30b, type: 3}
