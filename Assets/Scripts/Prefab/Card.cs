@@ -56,14 +56,13 @@ public class Card : MonoBehaviour, IComparable
 
     public bool IsPlayable()
     {
-        //List<Card> Hand = transform.parent.GetComponent<HandPanel>().Hand;
-        List<Card> Hand = new List<Card>();
+        HandPanel HandPanel = transform.parent.GetComponent<HandPanel>();
         Couleur CouleurDuPli = (Couleur)GameObject.Find("Pli").GetComponent<Pli>().CouleurDemandee;
         if (CouleurDuPli == Couleur.Neutre)   //Neutre signifie que il n'y a aucun couleur au pli actuel donc pas de carte jouée à ce pli
             return true;
         else
         {
-            if (HandHoldColor(CouleurDuPli, Hand))   //Si on a des cartes dans la main qui a la couleur de la couleur du pli
+            if (HandPanel.HandHoldColor(CouleurDuPli))   //Si on a des cartes dans la main qui a la couleur de la couleur du pli
             {
                 if (Color == CouleurDuPli)
                     return true;
@@ -78,38 +77,26 @@ public class Card : MonoBehaviour, IComparable
         }
     }
 
-    public bool HandHoldColor(Couleur couleur, List<Card> Hand)
-    {
-        foreach (Card Carte in Hand)
-        {
-            if (Color == couleur)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
+
 
     //deux premiers arguments temporaire pour éviter les erreurs de compilations
-    public Communication AvailableCommunication(int[] MaxParCouleur, int[] MinParCouleur, Card Carte) //changer argument Carte en fonction de l'endroit où on dois placer la fonnction, si dans carte retirer totalement l'argument
+    public Communication AvailableCommunication(Card Carte) //changer argument Carte en fonction de l'endroit où on dois placer la fonnction, si dans carte retirer totalement l'argument
     {
-        //
-        // Ordre des couleurs :  Bleu, Jaune, Rose
-        int IndiceCouleur = Carte.Color - (Couleur)1; //on réduit de 1 pour que ça passe dans le tableau
-        if (IndiceCouleur == -1) //si c'est une carte noir
+        HandPanel HandPanel = transform.parent.GetComponent<HandPanel>();
+        if (Carte.Color == Couleur.Noir) //si c'est une carte noir
             return Communication.Rien;
         else
         {
-            if (Carte.Value == MaxParCouleur[IndiceCouleur]) //si carte est la carte du haut
+            if (Carte.Value == HandPanel.TheHighestCardInHand(Carte.Color)) //si carte est la carte du haut
             {
-                if (Carte.Value == MinParCouleur[IndiceCouleur]) //si carte est la carte du bas
+                if (Carte.Value == HandPanel.TheLowestCardInHand(Carte.Color)) //si carte est la carte du bas
                     return Communication.Seul;    //la carte est la plus haute et la plus basse donc la seul
                 else
                     return Communication.Haut;
             }
             else
             {
-                if (Carte.Value == MinParCouleur[IndiceCouleur]) // si carte est la carte du bas
+                if (Carte.Value == HandPanel.TheLowestCardInHand(Carte.Color)) // si carte est la carte du bas
                     return Communication.Bas;
                 else
                     return Communication.Rien;
