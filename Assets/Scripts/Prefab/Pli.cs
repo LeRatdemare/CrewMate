@@ -4,19 +4,16 @@ using UnityEngine;
 
 public class Pli : MonoBehaviour
 {
-    public int nbExistingSlots;
-    public int nbPlayableSlots;
-    public int premierJoueur;
-    public Card.Couleur couleurDemandee;
+    public GameManager gameManager;
+    public TheCrewGame theCrewGame;
+    private Card.Couleur couleurDemandee;
     public Card.Couleur CouleurDemandee
     {
         get { return couleurDemandee; }
         set
         {
-            if (value == Card.Couleur.Neutre)
+            if (value == Card.Couleur.Neutre || couleurDemandee == Card.Couleur.Neutre)
                 couleurDemandee = value;
-            else
-                if (cardsPlayed.Count == 0) couleurDemandee = value;
         }
     }
     public List<Card> cardsPlayed;
@@ -24,35 +21,38 @@ public class Pli : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        theCrewGame = GameObject.Find("GameManager").GetComponent<TheCrewGame>();
 
+        CouleurDemandee = Card.Couleur.Neutre;
     }
     public void ResetPli()
     {
-        for (int i = 0; i < nbExistingSlots; i++)
+        for (int i = 0; i < theCrewGame.NbPlayers; i++)
         {
             transform.GetChild(i).GetComponent<Card>().Desactiver();
         }
         CouleurDemandee = Card.Couleur.Neutre;
     }
 
-    public GameObject GetRandomFreeSlot()
-    {
-        if (GetNbOccupiedSlots() >= nbPlayableSlots) return null;
+    // public GameObject GetRandomFreeSlot()
+    // {
+    //     if (GetNbOccupiedSlots() >= nbPlayableSlots) return null;
 
-        int slotIndex = Random.Range(0, nbExistingSlots);
-        GameObject slot;
-        do
-        {
-            slot = transform.GetChild(slotIndex).gameObject;
-            slotIndex = (slotIndex + 1) % nbExistingSlots;
-        }
-        while (slot.GetComponent<Card>().Activee);
-        return slot;
-    }
+    //     int slotIndex = Random.Range(0, nbExistingSlots);
+    //     GameObject slot;
+    //     do
+    //     {
+    //         slot = transform.GetChild(slotIndex).gameObject;
+    //         slotIndex = (slotIndex + 1) % nbExistingSlots;
+    //     }
+    //     while (slot.GetComponent<Card>().Activee);
+    //     return slot;
+    // }
     public int GetNbOccupiedSlots()
     {
         int nbOccupiedSlots = 0;
-        for (int i = 0; i < transform.childCount; i++)
+        for (int i = 0; i < theCrewGame.NbPlayers; i++)
         {
             if (transform.GetChild(i).GetComponent<Card>().Activee) nbOccupiedSlots++;
         }
@@ -60,35 +60,78 @@ public class Pli : MonoBehaviour
     }
     public Card GetStrongestCard()
     {
-        Card strongest = cardsPlayed[0];
-        for (int i = 1; i < cardsPlayed.Count; i++)
+        Card strongest = transform.GetChild(0).GetComponent<Card>();
+        for (int i = 1; i < theCrewGame.NbPlayers; i++)
         {
             strongest = CardChallenge(strongest, cardsPlayed[i]);
         }
         return strongest;
     }
-
-    public void CarteGaganteDuPli()
+    /// Renvoie l'index de la carte la plus forte du pli. -1 si aucune carte n'est jouée
+    public int GetStrongestCardSlotIndex()
     {
-        Card WinningCard = GetStrongestCard();
-        //à compléter
+        // Pour cette boucle on part du principe qu'il y a autant de slots que de joueurs
+        int strongestIndex = 0;
+        for (int i = 1; i < theCrewGame.NbPlayers; i++)
+        {
+            strongestIndex = CardChallenge(strongestIndex, i);
+        }
+        return strongestIndex;
     }
 
-    private Card CardChallenge(Card Champion, Card Challenger)//Champion est la carte qui gagne dans le pli
+    // public void CarteGaganteDuPli()
+    // {
+    //     Card WinningCard = GetStrongestCard();
+    //     //à compléter
+    // }
+
+    private int CardChallenge(int championIndex, int challengerIndex)
     {
-        if (Champion.Color == Challenger.Color)   //si les couleurs sont les mêmes,
+        Card champion;
+        if (championIndex == -1) champion = null;
+        else champion = transform.GetChild(championIndex).GetComponent<Card>();
+        Card challenger;
+        if (challengerIndex == -1) challenger = null;
+        else challenger = transform.GetChild(challengerIndex).GetComponent<Card>();
+
+        if (CardChallenge(champion, challenger) == champion) return championIndex;
+        else if (CardChallenge(champion, challenger) == challenger) return challengerIndex;
+        else return -1;
+    }
+    private Card CardChallenge(Card champion, Card challenger)//Champion est la carte qui gagne dans le pli
+    {
+        if ((challenger == null || !challenger.Activee) && (champion == null || !champion.Activee)) return null;
+        if ((champion == null || !champion.Activee)) return challenger;
+        if ((challenger == null || !challenger.Activee)) return champion;
+
+        if (champion.Color == challenger.Color)   //si les couleurs sont les mêmes,
         {
-            if (Champion.Value > Challenger.Value) //il suffit de comparer les nombres.
-                return Champion;
+            if (champion.Value > challenger.Value) //il suffit de comparer les nombres.
+                return champion;
             else
-                return Challenger;
+                return challenger;
         }
         else                                //sinon seul la couleur est importante
         {
-            if (Challenger.Color == Card.Couleur.Noir) //si le challengeur est noir alors champion 
-                return Challenger;        //est de la couleur de l'CouleurDuPli donc le challengeur gagne
-            else                    //sinon challengeur est soit ni noir ni de la couleur de la couleur du pli donc il perd automatiquement
-                return Champion;    //ou challengeur est de la couleur de l'CouleurDuPli mais puisque Champion n'est pas de la couleur de Challengeur et que il est soit noir, soit de la couleur de la couleur du pli alors Champion est forcément noir, donc Champion gagne.
+            if (challenger.Color == Card.Couleur.Noir)
+                return challenger;
+            else if (champion.Color == Card.Couleur.Noir)
+                return champion;
+            else if (challenger.Color == CouleurDemandee)
+                return challenger;
+            else if (champion.Color == CouleurDemandee)
+                return champion;
+            else
+                return null;
         }
+    }
+    public bool IsInPli(Card card)
+    {
+        // On parcours le pli
+        for (int i = 0; i < theCrewGame.NbPlayers; i++)
+        {
+            if (transform.GetChild(i).GetComponent<Card>().Equals(card)) return true;
+        }
+        return false;
     }
 }

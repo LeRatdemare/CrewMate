@@ -5,6 +5,8 @@ using UnityEngine.UIElements;
 
 public class TableauCartes : MonoBehaviour
 {
+    public GameManager gameManager;
+    public TheCrewGame theCrewGame;
     public enum State
     {
         HandCardsSelection, OtherPlayerCardSelection, Hiden
@@ -13,11 +15,13 @@ public class TableauCartes : MonoBehaviour
     // Start is called before the first frame update
     public GameObject[,] cartes;
     public GameObject cardPrefab;
-    public GameManager gameManager;
     public int NB_COULEURS;
     public int NB_VALEURS;
     void Start()
     {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        theCrewGame = GameObject.Find("GameManager").GetComponent<TheCrewGame>();
+
         cartes = new GameObject[NB_COULEURS, NB_VALEURS];
 
         for (int couleur = 0; couleur < NB_COULEURS; couleur++)
@@ -35,7 +39,7 @@ public class TableauCartes : MonoBehaviour
                 carte.transform.localScale = new Vector3(0.55f, 0.55f, 1);
                 carte.transform.parent = transform;
 
-                carte.GetComponent<Card>().Activer(gameManager, 0, (Card.Couleur)couleur, valeur + 1, sprite, Card.ConteneurCarte.TableauCartes);
+                carte.GetComponent<Card>().Activer(0, (Card.Couleur)couleur, valeur + 1, sprite, Card.ConteneurCarte.TableauCartes);
                 cartes[couleur, valeur] = carte;
             }
         }
@@ -56,5 +60,39 @@ public class TableauCartes : MonoBehaviour
                 break;
         }
         currentState = state;
+    }
+    public void DeselectAllCards()
+    {
+        for (int couleur = 0; couleur < theCrewGame.NbColors; couleur++)
+        {
+            for (int valeur = 0; valeur < 9; valeur++)
+            {
+                GameObject cardObject = cartes[couleur, valeur];
+                if (cardObject != null)
+                {
+                    Card card = cardObject.GetComponent<Card>();
+                    if (card.Selected)
+                        card.Selected = false;
+                }
+            }
+        }
+    }
+    public Card GetSelectedCard()
+    {
+        for (int couleur = 0; couleur < theCrewGame.NbColors; couleur++)
+        {
+            for (int valeur = 0; valeur < 9; valeur++)
+            {
+                GameObject cardObject = cartes[couleur, valeur];
+                if (cardObject != null)
+                {
+                    Card card = cardObject.GetComponent<Card>();
+                    if (card.Selected)
+                        return card;
+                }
+            }
+        }
+        // Ne devrait pas arriver, seulement si le joueur n'a rien sélectionné
+        return null;
     }
 }

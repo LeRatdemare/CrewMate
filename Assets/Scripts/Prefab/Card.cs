@@ -24,26 +24,71 @@ public class Card : MonoBehaviour, IComparable
     public Couleur Color { get; private set; }
     public int Value { get; private set; }
     private bool selected;
+    public bool Selected
+    {
+        get { return selected; }
+        set
+        {
+            switch (conteneur)
+            {
+                case ConteneurCarte.HandPanel:
+                    if (value)
+                    {
+                        // On déselectionne toutes les cartes
+                        gameManager.handPanel.DeselectAllCards();
+                        transform.localPosition += Vector3.up * 0.3f;
+                    }
+                    else
+                        transform.localPosition += Vector3.down * 0.3f;
+                    selected = value;
+                    break;
+                case ConteneurCarte.TableauCartes:
+                    if (value)
+                    {
+                        // On déselectionne toutes les cartes
+                        gameManager.tableauCartes.DeselectAllCards();
+                        transform.Rotate(new Vector3(0, 0, 90));
+                        transform.localScale = new Vector3(transform.localScale.x * 3, transform.localScale.y / 2.5f, transform.localScale.z);
+                    }
+                    else
+                    {
+                        transform.Rotate(new Vector3(0, 0, -90));
+                        transform.localScale = new Vector3(transform.localScale.x / 3, transform.localScale.y * 2.5f, transform.localScale.z);
+                    }
+                    selected = value;
+                    break;
+            }
+        }
+    }
     private ConteneurCarte conteneur;
     private GameManager gameManager;
+    private TheCrewGame theCrewGame;
     public bool Activee { get; private set; } = false;
 
-    public Card(int type, Couleur color, int value)
+    void Start()
     {
-        Type = type;
-        Color = color;
-        Value = value;
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        theCrewGame = GameObject.Find("GameManager").GetComponent<TheCrewGame>();
     }
 
-    public void Activer(GameManager gameManager, int type, Couleur color, int value, Sprite sprite, ConteneurCarte conteneur)
+    public void Activer(int type, Couleur color, int value, Sprite sprite, ConteneurCarte conteneur)
     {
-        this.gameManager = gameManager;
         Type = type;
         Color = color;
         Value = value;
         GetComponent<SpriteRenderer>().sprite = sprite;
         this.conteneur = conteneur;
         Activee = true;
+
+        // On actualise la couleur demandée si la carte est activée dans le pli
+        if (conteneur == ConteneurCarte.Pli)
+        {
+            gameManager.pli.CouleurDemandee = Color;
+        }
+    }
+    public void Activer(Card card, ConteneurCarte conteneur)
+    {
+        Activer(card.Type, card.Color, card.Value, card.GetComponent<SpriteRenderer>().sprite, conteneur);
     }
     public void Desactiver()
     {
@@ -107,43 +152,66 @@ public class Card : MonoBehaviour, IComparable
     {
         if (Activee)
         {
-            if (IsPlayable())
+            switch (conteneur)
             {
-                switch (conteneur)
-                {
-                    case ConteneurCarte.HandPanel:
-                        Play();
-                        break;
-                    case ConteneurCarte.TableauCartes:
-                        AjouterDansLaMain();
-                        break;
-                }
+                // Dans le cas où la carte est dans la main, elle n'est pas toujours cliquable
+                case ConteneurCarte.HandPanel:
+                    switch (theCrewGame.GamePhase)
+                    {
+                        // Si le joueur est entrain de choisir ses cartes elle repart dans le tableau
+                        case TheCrewGame.Phase.UserCardsSelection:
+                            RangerDansLeTableau();
+                            break;
+                        case TheCrewGame.Phase.UserPlaying:
+                            Selected = !Selected;
+                            break;
+                        case TheCrewGame.Phase.UserCommunicating:
+                            break;
+                    }
+                    break;
+                case ConteneurCarte.TableauCartes:
+                    switch (theCrewGame.GamePhase)
+                    {
+                        // Si le joueur est entrain de choisir ses cartes elle repart dans le tableau
+                        case TheCrewGame.Phase.UserCardsSelection:
+                            AjouterDansLaMain();
+                            break;
+                        case TheCrewGame.Phase.OtherPlayerPlaying:
+                            Selected = !Selected;
+                            break;
+                        case TheCrewGame.Phase.OtherPlayerCommunicating:
+                            break;
+                    }
+
+                    break;
+                case ConteneurCarte.Pli:
+                    // A coder...
+                    break;
             }
         }
     }
-
-    void Play()
-    {
-        Pli pli = gameManager.pli.GetComponent<Pli>();
-        GameObject slot = pli.GetRandomFreeSlot();
-        if (slot != null)
-        {
-            slot.GetComponent<Card>().Activer(gameManager, Type, Color, Value, GetComponent<SpriteRenderer>().sprite, ConteneurCarte.Pli);
-            Desactiver();
-        }
-        else
-        {
-            // Faire apparaître une fenêtre pour le message d'erreur
-            Debug.Log("Il n'y a plus de slot disponible dans le pli");
-        }
-    }
+    // void Play(int numPlayer)
+    // {
+    //     Pli pli = gameManager.pli.GetComponent<Pli>();
+    //     Card slot = pli.Slots[numPlayer];
+    //     if (slot != null)
+    //     {
+    //         slot.GetComponent<Card>().Activer(Type, Color, Value, GetComponent<SpriteRenderer>().sprite, ConteneurCarte.Pli);
+    //         Desactiver();
+    //     }
+    //     else
+    //     {
+    //         // Faire apparaître une fenêtre pour le message d'erreur
+    //         Debug.Log("Il n'y a plus de slot disponible dans le pli");
+    //     }
+    // }
     void AjouterDansLaMain()
     {
         HandPanel handPanel = gameManager.handPanel.GetComponent<HandPanel>();
         GameObject slot = handPanel.GetFirstFreeSlot();
         if (slot != null)
         {
-            slot.GetComponent<Card>().Activer(gameManager, Type, Color, Value, GetComponent<SpriteRenderer>().sprite, ConteneurCarte.HandPanel);
+            slot.GetComponent<Card>().Activer(Type, Color, Value, GetComponent<SpriteRenderer>().sprite, ConteneurCarte.HandPanel);
             Desactiver();
         }
         else
@@ -152,6 +220,12 @@ public class Card : MonoBehaviour, IComparable
             Debug.Log("Il n'y a plus de slot disponible dans la main");
         }
 
+    }
+    void RangerDansLeTableau()
+    {
+        Card slot = gameManager.tableauCartes.cartes[(int)Color, Value - 1].GetComponent<Card>();
+        slot.Activer(Type, Color, Value, GetComponent<SpriteRenderer>().sprite, ConteneurCarte.TableauCartes);
+        Desactiver();
     }
 
     void OnMouseEnter()
@@ -192,12 +266,19 @@ public class Card : MonoBehaviour, IComparable
             return 1;
         else if (card.Color == Couleur.Noir)
             return -1;
-        else if (Color == gameManager.pli.GetComponent<Pli>().couleurDemandee)
+        else if (Color == gameManager.pli.GetComponent<Pli>().CouleurDemandee)
             return 1;
-        else if (card.Color == gameManager.pli.GetComponent<Pli>().couleurDemandee)
+        else if (card.Color == gameManager.pli.GetComponent<Pli>().CouleurDemandee)
             return -1;
         // Dans le cas où les 2 cartes ne sont ni noirs ni de la couleur demandée il y a égalité
         else
             return 0;
+    }
+    /// <summary>On fait le choix de ne comparer que couleur et valeur pour pouvoir comparer avec les tâches.</summary>
+    public override bool Equals(object other)
+    {
+        if (!(other is Card)) return false;
+        Card otherCard = (Card)other;
+        return Value == otherCard.Value && Color == otherCard.Color;
     }
 }
