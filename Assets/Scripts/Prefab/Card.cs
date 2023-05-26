@@ -12,7 +12,7 @@ public class Card : MonoBehaviour, IComparable
 
     public enum ConteneurCarte
     {
-        TableauCartes, HandPanel, Pli, CommunicationPanel, Defause, AutreJoueur
+        TableauCartes, HandPanel, Pli, CommunicationPanel, Defause, AutreJoueur,TableauTache,Tache//Enlever communicationPanel et AutreJoueur
     }
 
     public enum Communication
@@ -21,6 +21,7 @@ public class Card : MonoBehaviour, IComparable
     }
 
     public int Type { get; private set; }
+    public static int nbTacheSelectionnees =0;
     public Couleur Color { get; private set; }
     public int Value { get; private set; }
     private bool selected;
@@ -57,13 +58,35 @@ public class Card : MonoBehaviour, IComparable
                     }
                     selected = value;
                     break;
+                
+                case ConteneurCarte.TableauTache :
+                    if (value){
+                        if (nbTacheSelectionnees<3){//Le nombre 3 pourra potentiellement varier en fontion des tâches
+                            nbTacheSelectionnees++;
+                            transform.Rotate(new Vector3(0, 0, 90));
+                            transform.localScale = new Vector3(transform.localScale.x * 3, transform.localScale.y / 2.5f, transform.localScale.z);
+                            selected = value;
+                        }
+                        else{
+                            string title = "Erreur";
+                            string msg = $"Vous avez selectionné trop de tâches pour pouvoir en selectionner une nouvelle. Veuillez en déselectionner une.";
+                            gameManager.ShowMessagePopup(msg, 2, title);
+                        }                     
+                    }
+                    else{
+                        nbTacheSelectionnees--;
+                        transform.Rotate(new Vector3(0, 0, -90));
+                        transform.localScale = new Vector3(transform.localScale.x / 3, transform.localScale.y * 2.5f, transform.localScale.z);
+                        selected = value;
+                    }
+                    break;
             }
         }
     }
     private ConteneurCarte conteneur;
     private GameManager gameManager;
     private TheCrewGame theCrewGame;
-    public bool Activee { get; private set; } = false;
+    public bool Activee { get; private set; } = false;//syntaxe ?
 
     void Start()
     {
@@ -77,10 +100,11 @@ public class Card : MonoBehaviour, IComparable
         Color = color;
         Value = value;
         GetComponent<SpriteRenderer>().sprite = sprite;
-        this.conteneur = conteneur;
+        this.conteneur = conteneur;//Le conteneur ne change pas non?
         Activee = true;
 
         // On actualise la couleur demandée si la carte est activée dans le pli
+        //Mais c'est que pour le premier joueur non?
         if (conteneur == ConteneurCarte.Pli)
         {
             gameManager.pli.CouleurDemandee = Color;
@@ -99,7 +123,7 @@ public class Card : MonoBehaviour, IComparable
         Activee = false;
     }
 
-    public bool IsPlayable()
+    public bool IsPlayable()//Mettre IsPlayable au bon endroit pour empecher de jouer une mauvaise carte
     {
         //List<Card> Hand = transform.parent.GetComponent<HandPanel>().Hand;
         List<Card> Hand = new List<Card>();
@@ -127,7 +151,7 @@ public class Card : MonoBehaviour, IComparable
     {
         foreach (Card Carte in Hand)
         {
-            if (Color == couleur)
+            if (Color == couleur)//Je comprend pas comment ca marche, Color et couleur sont fixes non?
             {
                 return true;
             }
@@ -200,6 +224,9 @@ public class Card : MonoBehaviour, IComparable
                 case ConteneurCarte.Pli:
                     // A coder...
                     break;
+                case ConteneurCarte.TableauTache://A voir s'il y a beaucoup à modif en dehors de ca
+                        Selected = !Selected;
+                    break;
             }
         }
     }
@@ -225,7 +252,7 @@ public class Card : MonoBehaviour, IComparable
         if (slot != null)
         {
             slot.GetComponent<Card>().Activer(Type, Color, Value, GetComponent<SpriteRenderer>().sprite, ConteneurCarte.HandPanel);
-            Desactiver();
+            Desactiver();//chaque instance de carte est liée à un slot et là on est par rapport au previous slot donc on a pas besoin de le chercher car on est déjà dedans
         }
         else
         {
@@ -244,7 +271,7 @@ public class Card : MonoBehaviour, IComparable
     void OnMouseEnter()
     {
         if (conteneur != ConteneurCarte.Pli)
-            GetComponent<SpriteRenderer>().color = new Color(0.9f, 0.9f, 0.9f, 0.7f);
+            GetComponent<SpriteRenderer>().color = new Color(0.9f, 0.9f, 0.9f, 0.7f);//Pour faire le petit effet lorsu'on hoover une carte
     }
     void OnMouseExit()
     {

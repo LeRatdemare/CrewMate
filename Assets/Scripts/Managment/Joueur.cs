@@ -31,7 +31,7 @@ public class Joueur : MonoBehaviour
     /** <summary> Retire et renvoie les tâches effectuées grâce au pli actuel.
     !! Doit être appelée sur le gagnant du pli !!</summary>
     */
-    public List<Card> CheckSuccessfulTasks()
+    public List<Card> CheckSuccessfulTasks()// Faire les vérifs aussi pour les joueurs qui n'ont pas gagné le pli
     {
         List<Card> completedTasks = new List<Card>();
         // Pour chaque tâche, on regarde si elle est dans le pli

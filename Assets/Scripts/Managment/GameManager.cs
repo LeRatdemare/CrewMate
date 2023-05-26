@@ -9,7 +9,9 @@ public class GameManager : MonoBehaviour
     private TheCrewGame theCrewGame;
     [HideInInspector] public HandPanel handPanel;
     [HideInInspector] public TableauCartes tableauCartes;
+    [HideInInspector] public TableauTache tableauTache;
     [HideInInspector] public Pli pli;
+
     public int nbColors;
     public int nbCardsPerColor;
     public int nbJoueurs;
@@ -56,6 +58,8 @@ public class GameManager : MonoBehaviour
         theCrewGame = GetComponent<TheCrewGame>();
         tableauCartes = GameObject.Find("TableauCartes").GetComponent<TableauCartes>();
         tableauCartes.SetState(TableauCartes.State.Hiden);
+        tableauTache = GameObject.Find("TableauTache").GetComponent<TableauTache>();// erreur de null reference
+        tableauTache.SetState(TableauTache.State.Hiden);
         handPanel = GameObject.Find("HandPanel").GetComponent<HandPanel>();
         pli = GameObject.Find("Pli").GetComponent<Pli>();
         BoutonSuivant = GameObject.Find("BoutonSuivant").GetComponent<BoutonSuivant>();

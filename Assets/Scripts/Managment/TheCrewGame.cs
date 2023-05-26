@@ -12,6 +12,7 @@ public class TheCrewGame : MonoBehaviour
     public int NbPlis { get; private set; }
     public int NbColors { get; private set; } // Compte le noir
     public int currentPlayer;
+    public int capitaine;
 
     public enum Player
     {
@@ -70,9 +71,30 @@ public class TheCrewGame : MonoBehaviour
         {
             currentPlayer = (currentPlayer + 1) % NbPlayers;
         }
+        switch(GamePhase)
+        {
+            case  Phase.TasksSelection:
+                if(currentPlayer!=capitaine)//Ca veut dire que pas toutes les personnes ont selectionné leur tâches
+                {
+                    GamePhase = Phase.TasksSelection;
+                }
+                else {//La phase tache est terminée on passe au jeu
+                    if (capitaine == (int)Player.User)// On passe soit au tour de l'utilisateur soit à celui d'un adversaire
+                        GamePhase = Phase.UserPlaying;
+                else
+                    GamePhase = Phase.OtherPlayerPlaying;
+                }
+            break;
+            
+            default :   //La phase est soit UserPlaying soit OtherPlayerPlaying
+                if (currentPlayer == (int)Player.User) GamePhase = Phase.UserPlaying;
+                else GamePhase = Phase.OtherPlayerPlaying;
+                break;
+
+        }
+
         // Quoiqu'il arrive, on change la phase
-        if (currentPlayer == (int)Player.User) GamePhase = Phase.UserPlaying;
-        else GamePhase = Phase.OtherPlayerPlaying;
+        
 
         // Si on a fini le pli, alors on vide le pli et on vérifie si la tâche a été réalisée
     }
@@ -94,7 +116,23 @@ public class TheCrewGame : MonoBehaviour
                 gameManager.BoutonSuivant.SetActive(false); // On cache le bouton suivant
                 gameManager.FirstPlayerSelectionPopup.SetActive(true); // On active la popup
                 break;
+            case Phase.TasksSelection:
+                if(currentPlayer==capitaine){//Il s'agit du premier joueur à choisir ses tâches donc c'est que la phase d'avant était FirstPlayerSelection et qu'il faut cacher le tableau
+                    gameManager.tableauCartes.SetState(TableauCartes.State.Hiden); // On cache le tableau
+                }
+                if (currentPlayer==0){
+                    msg = $"Veuillez selectionner vos tâches";
+                }
+                else{
+                    msg = $"Veuillez selectionner les tâches du joueur {currentPlayer}";
+                }
+                title = "Choix des taches";
+                gameManager.ShowMessagePopup(msg, 2, title, TextAlignmentOptions.Center);
+                gameManager.tableauTache.SetState(TableauTache.State.TasksSelection);
+                //A voir quoi mettre, probablement SetActiveLe schmilblick
+                break;
             case Phase.UserPlaying:
+                gameManager.tableauTache.SetState(TableauTache.State.Hiden);//Dans certains cas le tableau sera déjà caché mais flemme de rajouter une condition
                 gameManager.tableauCartes.SetState(TableauCartes.State.Hiden); // On cache le tableau
                 // On annonce au joueur que c'est à lui de jouer
                 title = "Tour de l'utilisateur";
@@ -108,6 +146,7 @@ public class TheCrewGame : MonoBehaviour
                 // A coder...
                 break;
             case Phase.OtherPlayerPlaying:
+                gameManager.tableauTache.SetState(TableauTache.State.Hiden);//Dans certains cas le tableau sera déjà caché mais flemme de rajouter une condition
                 // On annonce au joueur c'est à qui de jouer
                 title = "Tour des autres";
                 msg = $"Au joueur {currentPlayer} de jouer.";

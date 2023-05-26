@@ -9,6 +9,10 @@ public class BoutonSuivant : MonoBehaviour
 {
     TheCrewGame theCrewGame;
     GameManager gameManager;
+    public enum InfoJoueur
+    {
+        Tache=0, Communication=1
+    }
     void Start()
     {
         theCrewGame = GameObject.Find("GameManager").GetComponent<TheCrewGame>();
@@ -46,15 +50,44 @@ public class BoutonSuivant : MonoBehaviour
             que si l'utilisateur a sélectionné au moins 1 bouton.*/
             case TheCrewGame.Phase.FirstPlayerSelection:
                 gameManager.FirstPlayerSelectionPopup.SetActive(false);
-
-                // On passe soit au tour de l'utilisateur soit à celui d'un adversaire
-                if (theCrewGame.currentPlayer == 0)
-                    theCrewGame.GamePhase = TheCrewGame.Phase.UserPlaying;
-                else
-                    theCrewGame.GamePhase = TheCrewGame.Phase.OtherPlayerPlaying;
+                theCrewGame.capitaine = theCrewGame.currentPlayer;
+                theCrewGame.GamePhase = TheCrewGame.Phase.TasksSelection;
                 break;
 
             case TheCrewGame.Phase.TasksSelection:
+                int numeroSlot=0;
+                List<Card> lesCartesSelectionnees = gameManager.tableauTache.GetSelectedCard();
+                if (lesCartesSelectionnees.Count!=0 || theCrewGame.capitaine!= theCrewGame.currentPlayer )//vérifier qu'une liste vide a bien une longueur de 0
+                {
+                    foreach(Card maCarte in lesCartesSelectionnees)
+                    {
+                        //gameManager.pli.transform.GetChild(theCrewGame.currentPlayer).GetComponent<Card>().Activer(maCarte, Card.ConteneurCarte.Pli);
+                        /*Il faudra remplacer pli par le nouveau conteneur avec les 3 slots mais modifs un peu la tecnhiques étant
+                        donné qu'on ne connait pas le nombre de tâche par personne. Il faudra probablement créer une fonction spécifique 
+                        qui attribue en fonction du joueur un slot particulier avec un système 01 11 21 ect avec le premier nombre = le joueur 
+                        et le deuxième le numéro du slot qui lui est attribué*/
+                        //GameObject.Find("Player"+theCrewGame.currentPlayer)puis trouver le grandChild
+                        //faire un truc différent pour le user en prenant PlayerInfoPanel
+                        //faire une enum en mode Communication ou Tache avec (int)Tache et (int)Communication
+                        GameObject.Find($"Slot{theCrewGame.currentPlayer}{(int)InfoJoueur.Tache}{numeroSlot}").GetComponent<Card>().Activer(maCarte, Card.ConteneurCarte.Tache);
+                        //GameObject slot = gameManager.playersInfoPanel.transform.GetChild(theCrewGame.currentPlayer).GetChild((int)Tache).GetChild(i);
+                        maCarte.Desactiver();
+                        numeroSlot++;
+                    }
+                    // On déselectionne toutes les cartes
+                    gameManager.tableauTache.DeselectAllCards();
+                    theCrewGame.NextPlayer();//C'est dans NextPlayer que va se décider si on reste dans la phase TaskSelection ou si on change
+                }
+                
+                //Ca serait cool qu'en fonction de la mission indiquée, cela soit relié à un dictionnaire qui sache combien de tâche par mission sont demandées
+        
+                else //On s'assure que le joueur capitaine rentre bien une tache
+                {
+                    title = "==Erreur==";
+                    msg = (theCrewGame.capitaine == 0) ? "Vous devez selectionner au moins une tâche car vous êtes le capitaine" : $"Vous devez rentrer au moins une tache pour le joueur {theCrewGame.currentPlayer} car il s'agit du capitaine, vous n'avez pas encore sélectionné ses taches...";
+                    gameManager.ShowMessagePopup(msg, 6, title);
+                }
+            
                 // A coder...
                 break;
 

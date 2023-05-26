@@ -182,8 +182,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb7f6d5d5aabbe94980433ad76785087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
+  theCrewGame: {fileID: 0}
   currentState: 0
   cardPrefab: {fileID: 1628628751204658760, guid: 8a2b2f60287fa834cac65b74ebe0513f, type: 3}
-  gameManager: {fileID: 0}
   NB_COULEURS: 4
   NB_VALEURS: 9
