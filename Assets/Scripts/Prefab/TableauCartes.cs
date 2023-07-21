@@ -30,13 +30,13 @@ public class TableauCartes : MonoBehaviour
             {
                 if (couleur == 0 && (valeur == 0 || valeur > 3)) continue;
 
-                Vector3 pos = new Vector3(1.7f * valeur - 6.8f, 1.1f * couleur - 0.6f, 0);
+                Vector3 pos = new Vector3(1.7f * valeur - 6.8f, 1.5f * couleur - 0.6f, 0);
                 GameObject carte = Instantiate(cardPrefab, pos, Quaternion.identity);
 
                 Sprite sprite = Resources.Load<Sprite>($"Images/Cartes/0{couleur}{valeur + 1}");
                 carte.GetComponent<SpriteRenderer>().sortingLayerName = "Popup";
                 carte.GetComponent<SpriteRenderer>().sortingOrder = couleur;//Pour savoir si la carte va s'afficher au dessus ou en dessous des autres, en fonction de sa couleur ?
-                carte.transform.localScale = new Vector3(0.55f, 0.55f, 1);
+                carte.transform.localScale = new Vector3(0.66f, 0.66f, 1.2f);
                 carte.transform.parent = transform;
 
                 carte.GetComponent<Card>().Activer(0, (Card.Couleur)couleur, valeur + 1, sprite, Card.ConteneurCarte.TableauCartes);

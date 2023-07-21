@@ -29,15 +29,14 @@ public class TableauTache : MonoBehaviour
         {
             for (int valeur = 0; valeur < NB_VALEURS; valeur++)
             {
-                //if (couleur == 0 && (valeur == 0 || valeur > 3)) continue;
 
-                Vector3 pos = new Vector3(1.7f * valeur - 6.8f, 1.1f * couleur - 0.6f, 0);
+                Vector3 pos = new Vector3(1.7f * valeur - 6.8f, 2.5f * couleur-5f, 0);
                 GameObject carte = Instantiate(cardPrefab, pos, Quaternion.identity);
 
                 Sprite sprite = Resources.Load<Sprite>($"Images/Cartes/1{couleur}{valeur + 1}");
                 carte.GetComponent<SpriteRenderer>().sortingLayerName = "Popup";
                 carte.GetComponent<SpriteRenderer>().sortingOrder = couleur;
-                carte.transform.localScale = new Vector3(0.55f, 0.55f, 1);
+                carte.transform.localScale = new Vector3(0.66f, 0.66f, 1.2f);
                 carte.transform.parent = transform;
 
                 carte.GetComponent<Card>().Activer(0, (Card.Couleur)couleur, valeur + 1, sprite, Card.ConteneurCarte.TableauTache);
@@ -59,7 +58,7 @@ public class TableauTache : MonoBehaviour
         }
         currentState = state;
     }
-    public void DeselectAllCards()//Probablement à garder mais il faudra modifier, car il doit pouvoir selectionner plusieurs cartes à la fois
+    public void DeselectAllCards()//Au final je ne l'ai pas utilisé mais peut être le garder au cas où
     {
         for (int couleur = 0; couleur < theCrewGame.NbColors; couleur++)
         {

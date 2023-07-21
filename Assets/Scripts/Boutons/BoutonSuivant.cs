@@ -55,25 +55,21 @@ public class BoutonSuivant : MonoBehaviour
                 break;
 
             case TheCrewGame.Phase.TasksSelection:
+                gameManager.handPanel.gameObject.SetActive(false);
                 int numeroSlot=0;
                 List<Card> lesCartesSelectionnees = gameManager.tableauTache.GetSelectedCard();
                 if (lesCartesSelectionnees.Count!=0 || theCrewGame.capitaine!= theCrewGame.currentPlayer )//vérifier qu'une liste vide a bien une longueur de 0
                 {
                     foreach(Card maCarte in lesCartesSelectionnees)
                     {
-                        //gameManager.pli.transform.GetChild(theCrewGame.currentPlayer).GetComponent<Card>().Activer(maCarte, Card.ConteneurCarte.Pli);
-                        /*Il faudra remplacer pli par le nouveau conteneur avec les 3 slots mais modifs un peu la tecnhiques étant
-                        donné qu'on ne connait pas le nombre de tâche par personne. Il faudra probablement créer une fonction spécifique 
-                        qui attribue en fonction du joueur un slot particulier avec un système 01 11 21 ect avec le premier nombre = le joueur 
-                        et le deuxième le numéro du slot qui lui est attribué*/
-                        //GameObject.Find("Player"+theCrewGame.currentPlayer)puis trouver le grandChild
-                        //faire un truc différent pour le user en prenant PlayerInfoPanel
-                        //faire une enum en mode Communication ou Tache avec (int)Tache et (int)Communication
-                        GameObject.Find($"Slot{theCrewGame.currentPlayer}{(int)InfoJoueur.Tache}{numeroSlot}").GetComponent<Card>().Activer(maCarte, Card.ConteneurCarte.Tache);
-                        //GameObject slot = gameManager.playersInfoPanel.transform.GetChild(theCrewGame.currentPlayer).GetChild((int)Tache).GetChild(i);
+                        Card emplacementTache = GameObject.Find($"Slot{theCrewGame.currentPlayer}{(int)InfoJoueur.Tache}{numeroSlot}").GetComponent<Card>();
+                        emplacementTache.Activer(maCarte, Card.ConteneurCarte.Tache);
+                        theCrewGame.Joueurs[theCrewGame.currentPlayer].remainingTasks.Add(emplacementTache);//On met à jour la liste des taches pour le joueur pour qui on vient de sélectionner les cartes
                         maCarte.Desactiver();
                         numeroSlot++;
                     }
+
+
                     // On déselectionne toutes les cartes
                     gameManager.tableauTache.DeselectAllCards();
                     theCrewGame.NextPlayer();//C'est dans NextPlayer que va se décider si on reste dans la phase TaskSelection ou si on change
@@ -87,8 +83,6 @@ public class BoutonSuivant : MonoBehaviour
                     msg = (theCrewGame.capitaine == 0) ? "Vous devez selectionner au moins une tâche car vous êtes le capitaine" : $"Vous devez rentrer au moins une tache pour le joueur {theCrewGame.currentPlayer} car il s'agit du capitaine, vous n'avez pas encore sélectionné ses taches...";
                     gameManager.ShowMessagePopup(msg, 6, title);
                 }
-            
-                // A coder...
                 break;
 
             case TheCrewGame.Phase.UserPlaying:
@@ -97,6 +91,9 @@ public class BoutonSuivant : MonoBehaviour
                 // S'il en a sélectionné une on l'ajoute au Slot correspondant du pli
                 if (selectedCard != null)
                 {
+                    if (theCrewGame.User.communication==false){
+                        theCrewGame.User.RetirerMaxMinCouleur((int)selectedCard.Color, selectedCard.Value);//On continue à actualiser la plus haute et la plus basse carte que le joueur a en main
+                    }
                     gameManager.pli.transform.GetChild(0).GetComponent<Card>().Activer(selectedCard, Card.ConteneurCarte.Pli);
                     selectedCard.Desactiver();
                     // On déselectionne toutes les cartes
@@ -118,7 +115,7 @@ public class BoutonSuivant : MonoBehaviour
                 // A coder...
                 break;
             case TheCrewGame.Phase.OtherPlayerPlaying:
-                gameManager.BoutonCommuniquer.SetActive(false);
+                //gameManager.BoutonCommuniquer.SetActive(false);
 
                 // Si le joueur a sélectionné une carte, on la met dans le pli au slot correspondant
                 selectedCard = gameManager.tableauCartes.GetSelectedCard();
@@ -137,12 +134,26 @@ public class BoutonSuivant : MonoBehaviour
                     msg = $"C'est toujours au joueur {theCrewGame.currentPlayer} de jouer, vous n'avez pas encore sélectionné sa carte...";
                     gameManager.ShowMessagePopup(msg, 6, title);
                 }
-                // A coder...
                 break;
             case TheCrewGame.Phase.OtherPlayerCommunicating:
-                gameManager.BoutonCommuniquer.SetActive(false);
-                theCrewGame.NextPlayer();
-                // A coder...
+                selectedCard = gameManager.choixjetons.GetSelectedCard();
+                if (selectedCard != null)//IL VA FALLOIR VERIFIER QU'ON NE PUISSE PAS CLIQUER SUR LES CARTES DANS HANDPANEL OU AUTRE
+                {
+                    int nb;
+                    string nom = selectedCard.name.Remove(0,5);//Cela correspond à l'index du mot "Carte" dans "Carte0", "Carte1", "Carte2"..ect
+                    int.TryParse(nom, out nb);//Si nb=0 jeton en haut si nb= 1 jeton au milieu et 2 jeton en bas    jn,
+                    GameObject.Find($"Player{theCrewGame.currentPlayer}/Communication{theCrewGame.currentPlayer}").transform.GetChild(nb).GetComponent<SpriteRenderer>().sprite =gameManager.jetonSprite;
+                    selectedCard.Desactiver();
+                    gameManager.choixjetons.DeselectAllCards();//A voir si l'instruction n'a pas déjà été mise ailleurs
+                    gameManager.choixjetons.gameObject.SetActive(false);
+                    theCrewGame.GamePhase = TheCrewGame.Phase.OtherPlayerPlaying;
+                } 
+                else
+                {
+                    title = "==Erreur==";
+                    msg = $"Vous devez sélectionner un emplacement pour le jeton communication";
+                    gameManager.ShowMessagePopup(msg, 6, title);
+                }
                 break;
         }
         Debug.Log($"Etape suivante, phase actuelle : {theCrewGame.GamePhase}");

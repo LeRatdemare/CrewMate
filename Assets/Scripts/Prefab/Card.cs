@@ -12,7 +12,7 @@ public class Card : MonoBehaviour, IComparable
 
     public enum ConteneurCarte
     {
-        TableauCartes, HandPanel, Pli, CommunicationPanel, Defause, AutreJoueur,TableauTache,Tache//Enlever communicationPanel et AutreJoueur
+        TableauCartes, HandPanel, Pli, CommunicationPanel, Defause, AutreJoueur,TableauTache,Tache,ChoixJetons//Enlever communicationPanel et AutreJoueur
     }
 
     public enum Communication
@@ -79,6 +79,16 @@ public class Card : MonoBehaviour, IComparable
                         transform.localScale = new Vector3(transform.localScale.x / 3, transform.localScale.y * 2.5f, transform.localScale.z);
                         selected = value;
                     }
+                    break;
+                case ConteneurCarte.ChoixJetons://C'est un copier coller de HandPanel, voir comment améliorer ca
+                if (value)
+                    {
+                        gameManager.choixjetons.DeselectAllCards();
+                        transform.localPosition += Vector3.up * 0.3f;
+                    }
+                    else
+                        transform.localPosition += Vector3.down * 0.3f;
+                    selected = value;
                     break;
             }
         }
@@ -159,10 +169,11 @@ public class Card : MonoBehaviour, IComparable
         return false;
     }
 
+/*
     //deux premiers arguments temporaire pour éviter les erreurs de compilations
     public Communication AvailableCommunication(int[] maxParCouleur, int[] minParCouleur, Card carte) //changer argument Carte en fonction de l'endroit où on dois placer la fonnction, si dans carte retirer totalement l'argument
-    {
-        //
+    {//Réféchir à enlever l'argument Card carte car probablement qu'il ne sert à rien
+
         // Ordre des couleurs :  Bleu, Jaune, Rose
         int indiceCouleur = carte.Color - (Couleur)1; //on réduit de 1 pour que ça passe dans le tableau
         if (indiceCouleur == -1) //si c'est une carte noir
@@ -185,6 +196,8 @@ public class Card : MonoBehaviour, IComparable
             }
         }
     }
+    */
+
     void OnMouseDown()
     {
         if (Activee)
@@ -227,6 +240,9 @@ public class Card : MonoBehaviour, IComparable
                 case ConteneurCarte.TableauTache://A voir s'il y a beaucoup à modif en dehors de ca
                         Selected = !Selected;
                     break;
+                case ConteneurCarte.ChoixJetons:
+                    Selected = !Selected;
+                    break;
             }
         }
     }
@@ -251,6 +267,7 @@ public class Card : MonoBehaviour, IComparable
         GameObject slot = handPanel.GetFirstFreeSlot();
         if (slot != null)
         {
+            theCrewGame.User.AjouterMaxMinCouleur((int)Color,Value);
             slot.GetComponent<Card>().Activer(Type, Color, Value, GetComponent<SpriteRenderer>().sprite, ConteneurCarte.HandPanel);
             Desactiver();//chaque instance de carte est liée à un slot et là on est par rapport au previous slot donc on a pas besoin de le chercher car on est déjà dedans
         }
@@ -263,6 +280,7 @@ public class Card : MonoBehaviour, IComparable
     }
     void RangerDansLeTableau()
     {
+        theCrewGame.User.RetirerMaxMinCouleur((int)Color,Value);
         Card slot = gameManager.tableauCartes.cartes[(int)Color, Value - 1].GetComponent<Card>();
         slot.Activer(Type, Color, Value, GetComponent<SpriteRenderer>().sprite, ConteneurCarte.TableauCartes);
         Desactiver();
@@ -319,6 +337,7 @@ public class Card : MonoBehaviour, IComparable
     {
         if (!(other is Card)) return false;
         Card otherCard = (Card)other;
+        Debug.Log($"Value : {Value}, oherCard.Value : {otherCard.Value} Color : {Color} otherCard.Color : {otherCard.Color}");
         return Value == otherCard.Value && Color == otherCard.Color;
     }
 }

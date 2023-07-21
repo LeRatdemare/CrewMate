@@ -41,7 +41,7 @@ public class Valider : MonoBehaviour
             }
         if(complet==true){
             Debug.Log($"Liste[0]: {parametrePartie[0]}, Liste[1]: {parametrePartie[1]}, Liste[2]:{parametrePartie[2]}, Liste[3]:{parametrePartie[3]} , Liste[4]: {parametrePartie[4]}");
-            SceneManager.LoadScene("Jeu");
+            ManageScene.GoToTheNextScene();
         }
     }
 }

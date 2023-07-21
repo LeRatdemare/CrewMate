@@ -12,7 +12,14 @@ public class TheCrewGame : MonoBehaviour
     public int NbPlis { get; private set; }
     public int NbColors { get; private set; } // Compte le noir
     public int currentPlayer;
+    public int NbJoueurSansTache;
     public int capitaine;
+    public JoueurUtilisateur User;
+    public enum EtatDelaPartie
+    {
+        EnCours, Gagne, Perdu
+    }
+    EtatDelaPartie etat;
 
     public enum Player
     {
@@ -20,7 +27,7 @@ public class TheCrewGame : MonoBehaviour
     }
     public enum Phase
     {
-        UserCardsSelection, FirstPlayerSelection, TasksSelection, UserPlaying, UserCommunicating, OtherPlayerPlaying, OtherPlayerCommunicating
+        UserCardsSelection, FirstPlayerSelection, TasksSelection, UserPlaying, UserCommunicating, OtherPlayerPlaying, OtherPlayerCommunicating, UserPlayingOrCommunicating, OtherPlayerPlayingOrCommunncating, EndOfTheGame
     }
     private Phase gamePhase;
     public Phase GamePhase
@@ -44,11 +51,13 @@ public class TheCrewGame : MonoBehaviour
         // Initialisation des autres variables
         currentPlayer = -1;
         Joueurs = new List<Joueur>(); // Initialiser la variable...
-        Joueurs.Add(GameObject.Find("User").GetComponent<Joueur>());
+        User = GameObject.Find("User").GetComponent<JoueurUtilisateur>();
+        Joueurs.Add(User);
         for (int i = 1; i < NbPlayers; i++)
         {
             Joueurs.Add(GameObject.Find($"Player{i}").GetComponent<JoueurNonUtilisateur>());
         }
+        etat = EtatDelaPartie.EnCours;
     }
     /// <summary>Actualise le currentPlayer et change de phase en fonction (UserPlaying ou OtherPlayerPlaying).</summary>
     public void NextPlayer()
@@ -57,14 +66,20 @@ public class TheCrewGame : MonoBehaviour
         if (gameManager.pli.GetNbOccupiedSlots() == NbPlayers)
         {
             // On récupère le vainqueur du pli et les tâches qu'il a complété
-            int winner = gameManager.pli.GetStrongestCardSlotIndex();
-            List<Card> completedTasks = Joueurs[winner].CheckSuccessfulTasks();
-            // On reset le pli et on désigne le vainqueur comme 1er joueur
+            currentPlayer = gameManager.pli.GetStrongestCardSlotIndex();//Le prochain joueur est ici le gagnant du pli
+            int i=0;
+            NbJoueurSansTache=0; //On réinitialise la variable juste avant de faire le décompte du nombre de joueur sans tache à la fin du pli
+            Debug.Log($"Le joueur {currentPlayer} a gagné le pli");
+            Debug.Log($"Couleur du pli {gameManager.pli.CouleurDemandee}");
+            while (etat==EtatDelaPartie.EnCours && i <NbPlayers){//On vérifie si des taches ont été complétées, ou manquées, et on sort de la boucle si une a été manquées car c'est la fin de la partie
+                etat = Joueurs[i].CheckSuccessfulTasks();
+                i++;
+            }
+            
+            // On reset le pli 
             gameManager.pli.ResetPli();
-            currentPlayer = winner;
 
-            // Puis on notifie l'utilisateur des tâches complétées
-            Debug.Log((winner == 0 ? $"Vous avez" : $"Le joueur {winner} a") + $" complété {completedTasks.Count} tâches.");
+            
         }
         // Si ce n'est pas le cas, on passe au prochain joueur.
         else
@@ -86,9 +101,16 @@ public class TheCrewGame : MonoBehaviour
                 }
             break;
             
-            default :   //La phase est soit UserPlaying soit OtherPlayerPlaying
-                if (currentPlayer == (int)Player.User) GamePhase = Phase.UserPlaying;
-                else GamePhase = Phase.OtherPlayerPlaying;
+            default :
+                Debug.Log($"Etat : {etat}");
+                if(etat == EtatDelaPartie.EnCours)  {
+                    if (currentPlayer == (int)Player.User) GamePhase = Phase.UserPlaying;
+                    else GamePhase = Phase.OtherPlayerPlaying;
+                }
+                else{
+                    GamePhase = Phase.EndOfTheGame;
+                } 
+                
                 break;
 
         }
@@ -109,14 +131,17 @@ public class TheCrewGame : MonoBehaviour
                 string title = "Selection des cartes";
                 string msg = "Cliquez sur les cartes que vous avez pioché. Une fois que c'est terminé, cliquez sur 'Next' en bas de la page. \nVous pouvez cliquer de nouveau sur les cartes sélectionnées pour les déselectionner.\n\n -ECHAP- pour passer...";
                 gameManager.ShowMessagePopup(msg, 20, title);
+                TextMessageIntoTheScene.TextPresentDansLaScene["TextInfoTour"].GetComponent<TextMessageIntoTheScene>().AfficherText("Choississez vos cartes");
                 gameManager.tableauCartes.SetState(TableauCartes.State.HandCardsSelection);
                 break;
             case Phase.FirstPlayerSelection:
                 gameManager.tableauCartes.SetState(TableauCartes.State.Hiden); // On cache le tableau
                 gameManager.BoutonSuivant.SetActive(false); // On cache le bouton suivant
                 gameManager.FirstPlayerSelectionPopup.SetActive(true); // On active la popup
+                TextMessageIntoTheScene.TextPresentDansLaScene["TextInfoTour"].GetComponent<TextMessageIntoTheScene>().AfficherText("Sélectionnez le premier joueur");
                 break;
             case Phase.TasksSelection:
+                gameManager.handPanel.gameObject.SetActive(false);
                 if(currentPlayer==capitaine){//Il s'agit du premier joueur à choisir ses tâches donc c'est que la phase d'avant était FirstPlayerSelection et qu'il faut cacher le tableau
                     gameManager.tableauCartes.SetState(TableauCartes.State.Hiden); // On cache le tableau
                 }
@@ -126,18 +151,21 @@ public class TheCrewGame : MonoBehaviour
                 else{
                     msg = $"Veuillez selectionner les tâches du joueur {currentPlayer}";
                 }
-                title = "Choix des taches";
-                gameManager.ShowMessagePopup(msg, 2, title, TextAlignmentOptions.Center);
+                TextMessageIntoTheScene.TextPresentDansLaScene["TextInfoTour"].GetComponent<TextMessageIntoTheScene>().AfficherText(msg);
+                //title = "Choix des taches";
+                //gameManager.ShowMessagePopup(msg, 2, title, TextAlignmentOptions.Center);
                 gameManager.tableauTache.SetState(TableauTache.State.TasksSelection);
                 //A voir quoi mettre, probablement SetActiveLe schmilblick
                 break;
             case Phase.UserPlaying:
+                gameManager.handPanel.gameObject.SetActive(true);
                 gameManager.tableauTache.SetState(TableauTache.State.Hiden);//Dans certains cas le tableau sera déjà caché mais flemme de rajouter une condition
                 gameManager.tableauCartes.SetState(TableauCartes.State.Hiden); // On cache le tableau
                 // On annonce au joueur que c'est à lui de jouer
-                title = "Tour de l'utilisateur";
+                //title = "Tour de l'utilisateur";
                 msg = $"A toi de jouer !";
-                gameManager.ShowMessagePopup(msg, 2, title, TextAlignmentOptions.Center);
+                //gameManager.ShowMessagePopup(msg, 2, title, TextAlignmentOptions.Center);
+                TextMessageIntoTheScene.TextPresentDansLaScene["TextInfoTour"].GetComponent<TextMessageIntoTheScene>().AfficherText(msg);
                 gameManager.BoutonCommuniquer.SetActive(true);
                 // A coder...
                 break;
@@ -146,18 +174,27 @@ public class TheCrewGame : MonoBehaviour
                 // A coder...
                 break;
             case Phase.OtherPlayerPlaying:
+                gameManager.handPanel.gameObject.SetActive(true);
                 gameManager.tableauTache.SetState(TableauTache.State.Hiden);//Dans certains cas le tableau sera déjà caché mais flemme de rajouter une condition
                 // On annonce au joueur c'est à qui de jouer
-                title = "Tour des autres";
+                //title = "Tour des autres";
                 msg = $"Au joueur {currentPlayer} de jouer.";
-                gameManager.ShowMessagePopup(msg, 2, title, TextAlignmentOptions.Center);
+                TextMessageIntoTheScene.TextPresentDansLaScene["TextInfoTour"].GetComponent<TextMessageIntoTheScene>().AfficherText(msg);
+                //gameManager.ShowMessagePopup(msg, 2, title, TextAlignmentOptions.Center);
                 gameManager.BoutonCommuniquer.SetActive(true);
                 gameManager.tableauCartes.SetState(TableauCartes.State.OtherPlayerCardSelection);
                 break;
 
             case Phase.OtherPlayerCommunicating:
-                gameManager.BoutonCommuniquer.SetActive(true);
-                // A coder...
+                gameManager.tableauCartes.DeselectAllCards();
+                        
+                Joueurs[currentPlayer].communication =true;
+
+                break;
+            case Phase.EndOfTheGame:
+                msg = $"Vous avez {etat}";
+                gameManager.EndOfTheGameWindow.SetActive(true);
+                TextMessageIntoTheScene.TextPresentDansLaScene["InfoPerduGagne"].GetComponent<TextMessageIntoTheScene>().AfficherText(msg);
                 break;
         }
         return phase;

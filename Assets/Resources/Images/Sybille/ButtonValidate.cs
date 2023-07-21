@@ -14,7 +14,7 @@ public class ButtonValidate : MonoBehaviour
             }
         }
         if (complet==true){
-            SceneManager.LoadScene("SettingMenu");
+            ManageScene.GoToTheNextScene();
         }
     }
 }

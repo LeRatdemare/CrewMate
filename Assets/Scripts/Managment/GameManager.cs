@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public TableauCartes tableauCartes;
     [HideInInspector] public TableauTache tableauTache;
     [HideInInspector] public Pli pli;
-
+    [HideInInspector] public ChoixJetons choixjetons;
     public int nbColors;
     public int nbCardsPerColor;
     public int nbJoueurs;
@@ -22,6 +22,8 @@ public class GameManager : MonoBehaviour
     public FirstPlayerSelectionPopup FirstPlayerSelectionPopup { get; private set; }
     public BoutonSuivant BoutonSuivant { get; set; }
     public BoutonCommuniquer BoutonCommuniquer { get; set; }
+    public Sprite jetonSprite;
+    public GameObject EndOfTheGameWindow;
 
     // Start is called before the first frame update
     void Start()
@@ -64,6 +66,8 @@ public class GameManager : MonoBehaviour
         pli = GameObject.Find("Pli").GetComponent<Pli>();
         BoutonSuivant = GameObject.Find("BoutonSuivant").GetComponent<BoutonSuivant>();
         BoutonCommuniquer = GameObject.Find("BoutonCommuniquer").GetComponent<BoutonCommuniquer>();
+        choixjetons = GameObject.Find("ChoixJetons").GetComponent<ChoixJetons>();
+        choixjetons.gameObject.SetActive(false);
         BoutonCommuniquer.SetActive(false);
 
         // On prépare les popups
@@ -72,6 +76,8 @@ public class GameManager : MonoBehaviour
         TimedMessagePopup.SetActive(false);
         FirstPlayerSelectionPopup = GameObject.Find("FirstPlayerSelectionPopup").GetComponent<FirstPlayerSelectionPopup>();
         FirstPlayerSelectionPopup.SetActive(false);
+        EndOfTheGameWindow = GameObject.Find("EndOfGameWindow");
+        EndOfTheGameWindow.SetActive(false);
 
         DrawRandomCards(8); // Le joueur devra sélectionner ses cartes à la place DEPRECATED a gérer par TheCrewGame
         // Puis le 1er joueur...

@@ -48,4 +48,9 @@ public class HandPanel : MonoBehaviour
         // Ne devrait pas arriver, seulement si le joueur n'a rien sélectionné
         return null;
     }
+
+    //Faire une fonction qui récupère toutes les cartes du HandPanel et apelle IsPlayable dessus
+    //On grise alors les cartes qui ne sont pas jouables, 
+    //. on appelle la fonction dans ThecrewGame
+    //quand on est à la phase UserPlaying
 }
