@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JoueurUtilisateur : Joueur
+public class JoueurUtilisateur : Joueur//Enlever cette classe
 {
     int nbCouleur = 3; //temporaire tant qu'on a pas relié le choix de setting du joueur à la partie actuelle
     List<(int max,int min)> MaxMinCouleur = new List<(int,int)>();//initialiser la liste avec des 0 comme max et 10 comme min ou des null s'ils peuvent être comparé à des nombres
@@ -16,7 +16,7 @@ public class JoueurUtilisateur : Joueur
     }
     
     
-    public void AjouterMaxMinCouleur(int couleur, int valeur){
+    public void AjouterMaxMinCouleur(int couleur, int valeur){//Mettre ca dans HandPanel
 
         if(couleur!=0){ //On vérifie que la carte qu'on vient d'ajouter n'est pas un atout
 
@@ -35,7 +35,7 @@ public class JoueurUtilisateur : Joueur
         
     }
 
-    public void RetirerMaxMinCouleur(int couleur, int valeur){
+    public void RetirerMaxMinCouleur(int couleur, int valeur){//Mettre ca dans HandPanel
 
         if (couleur != 0){ //On vérifie que la carte qu'on vient d'ajouter n'est pas un atout
             
@@ -85,7 +85,7 @@ public class JoueurUtilisateur : Joueur
         }  
     }
 
-    public string CommuniquerOuPas(Card carte){
+    public string CommuniquerOuPas(Card carte){//Mettre ca dans Card
         
         if (carte.Color != 0){
             
@@ -113,8 +113,6 @@ public class JoueurUtilisateur : Joueur
     }
         }
 
-    //Faire une fonction qui récupère les cartes communicable et les entoure d'un allo bleu
-    //Pour indiquer qu'elles sont communicables
         
      
 }

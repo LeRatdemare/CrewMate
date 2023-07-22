@@ -27,7 +27,7 @@ public class TheCrewGame : MonoBehaviour
     }
     public enum Phase
     {
-        UserCardsSelection, FirstPlayerSelection, TasksSelection, UserPlaying, UserCommunicating, OtherPlayerPlaying, OtherPlayerCommunicating, UserPlayingOrCommunicating, OtherPlayerPlayingOrCommunncating, EndOfTheGame
+        UserCardsSelection, FirstPlayerSelection, TasksSelection, UserPlaying, UserCommunicating, OtherPlayerPlaying, OtherPlayerCommunicating, UserPlayingOrCommunicating, TokensSelection, EndOfTheGame
     }
     private Phase gamePhase;
     public Phase GamePhase
@@ -95,7 +95,7 @@ public class TheCrewGame : MonoBehaviour
                 }
                 else {//La phase tache est terminée on passe au jeu
                     if (capitaine == (int)Player.User)// On passe soit au tour de l'utilisateur soit à celui d'un adversaire
-                        GamePhase = Phase.UserPlaying;
+                        GamePhase = Phase.UserPlayingOrCommunicating;
                 else
                     GamePhase = Phase.OtherPlayerPlaying;
                 }
@@ -104,7 +104,7 @@ public class TheCrewGame : MonoBehaviour
             default :
                 Debug.Log($"Etat : {etat}");
                 if(etat == EtatDelaPartie.EnCours)  {
-                    if (currentPlayer == (int)Player.User) GamePhase = Phase.UserPlaying;
+                    if (currentPlayer == (int)Player.User) GamePhase = Phase.UserPlayingOrCommunicating;// Avant c'était UserPlaying tout court
                     else GamePhase = Phase.OtherPlayerPlaying;
                 }
                 else{
@@ -134,12 +134,14 @@ public class TheCrewGame : MonoBehaviour
                 TextMessageIntoTheScene.TextPresentDansLaScene["TextInfoTour"].GetComponent<TextMessageIntoTheScene>().AfficherText("Choississez vos cartes");
                 gameManager.tableauCartes.SetState(TableauCartes.State.HandCardsSelection);
                 break;
+            
             case Phase.FirstPlayerSelection:
                 gameManager.tableauCartes.SetState(TableauCartes.State.Hiden); // On cache le tableau
                 gameManager.BoutonSuivant.SetActive(false); // On cache le bouton suivant
                 gameManager.FirstPlayerSelectionPopup.SetActive(true); // On active la popup
                 TextMessageIntoTheScene.TextPresentDansLaScene["TextInfoTour"].GetComponent<TextMessageIntoTheScene>().AfficherText("Sélectionnez le premier joueur");
                 break;
+            
             case Phase.TasksSelection:
                 gameManager.handPanel.gameObject.SetActive(false);
                 if(currentPlayer==capitaine){//Il s'agit du premier joueur à choisir ses tâches donc c'est que la phase d'avant était FirstPlayerSelection et qu'il faut cacher le tableau
@@ -157,7 +159,11 @@ public class TheCrewGame : MonoBehaviour
                 gameManager.tableauTache.SetState(TableauTache.State.TasksSelection);
                 //A voir quoi mettre, probablement SetActiveLe schmilblick
                 break;
-            case Phase.UserPlaying:
+
+            case Phase.UserPlayingOrCommunicating:
+                if(Joueurs[0].communication == true){
+                    gameManager.BoutonCommuniquer.SetActive(false);
+                }
                 gameManager.handPanel.gameObject.SetActive(true);
                 gameManager.tableauTache.SetState(TableauTache.State.Hiden);//Dans certains cas le tableau sera déjà caché mais flemme de rajouter une condition
                 gameManager.tableauCartes.SetState(TableauCartes.State.Hiden); // On cache le tableau
@@ -167,11 +173,20 @@ public class TheCrewGame : MonoBehaviour
                 //gameManager.ShowMessagePopup(msg, 2, title, TextAlignmentOptions.Center);
                 TextMessageIntoTheScene.TextPresentDansLaScene["TextInfoTour"].GetComponent<TextMessageIntoTheScene>().AfficherText(msg);
                 gameManager.BoutonCommuniquer.SetActive(true);
-                // A coder...
+                
+                break;
+            
+            case Phase.UserPlaying:
+                if(Joueurs[0].communication == true){
+                    gameManager.BoutonCommuniquer.SetActive(false);
+                }
+                gameManager.handPanel.DisplayPlayabilityInThePanel();//On fait apparaitre les cartes qui sont jouable
+            //Ici on grise les cartes qui ne sont pas jouable
+                
                 break;
             case Phase.UserCommunicating:
                 gameManager.BoutonCommuniquer.SetActive(true);
-                // A coder...
+                // Ici on grise les cartes qui ne sont pas communicables
                 break;
             case Phase.OtherPlayerPlaying:
                 gameManager.handPanel.gameObject.SetActive(true);
@@ -186,10 +201,12 @@ public class TheCrewGame : MonoBehaviour
                 break;
 
             case Phase.OtherPlayerCommunicating:
-                gameManager.tableauCartes.DeselectAllCards();
-                        
-                Joueurs[currentPlayer].communication =true;
+                break;
 
+            case Phase.TokensSelection :
+                gameManager.BoutonCommuniquer.SetActive(true);
+                gameManager.tableauCartes.DeselectAllCards();
+                Joueurs[currentPlayer].communication =true;
                 break;
             case Phase.EndOfTheGame:
                 msg = $"Vous avez {etat}";

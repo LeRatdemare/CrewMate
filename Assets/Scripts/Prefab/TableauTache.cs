@@ -11,8 +11,7 @@ public class TableauTache : MonoBehaviour
     {
         TasksSelection, Hiden //peut être enlever l'énum s'il n'y a qu'un seul state (je le garde pour l'instant au cas ou)
     }
-    public State currentState; //Aussi peut etre enlever ca pour la même raison que précedemment
-    // Start is called before the first frame update
+    public State currentState; //Aussi peut être enlever ca pour la même raison que précedemment
     public GameObject[,] cartes;
     public GameObject cardPrefab;
     public int NB_COULEURS; //Pas en soucis car on changera le nombre de valeur en attachant le script à l'objet

@@ -5,6 +5,7 @@ using UnityEngine;
 public class HandPanel : MonoBehaviour
 {
     public int nbSlots;
+    public List<Card> UserHand = new List<Card>();
     public GameObject GetFirstFreeSlot()
     {
         GameObject carte;
@@ -47,6 +48,38 @@ public class HandPanel : MonoBehaviour
         }
         // Ne devrait pas arriver, seulement si le joueur n'a rien sélectionné
         return null;
+    }
+
+    public void GetAllCards(){
+        for(int i=0; i< transform.childCount;i++){
+            Card carte = transform.GetChild(i).GetComponent<Card>();
+            if(carte.Activee== true){
+                UserHand.Add(carte);
+            }
+        }
+    }
+
+    public void DisplayPlayabilityInThePanel(){
+        for(int i = 0; i<UserHand.Count; i++){
+            if(UserHand[i].IsPlayable(UserHand)){
+                UserHand[i].Interactable=true;
+            }
+            else{
+                UserHand[i].Interactable=false;
+            }
+        }
+    }
+
+    public void DisplayCommunicability(){
+        
+    }
+
+    public void GetAllCardsInteractable(){
+        for(int i = 0; i<UserHand.Count; i++){
+           if(UserHand[i].Interactable== false) {
+                UserHand[i].Interactable= true;
+           }
+        }
     }
 
     //Faire une fonction qui récupère toutes les cartes du HandPanel et apelle IsPlayable dessus

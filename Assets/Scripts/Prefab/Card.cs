@@ -24,6 +24,19 @@ public class Card : MonoBehaviour, IComparable
     public static int nbTacheSelectionnees =0;
     public Couleur Color { get; private set; }
     public int Value { get; private set; }
+    private bool interactable=true;
+    public bool Interactable {get {return interactable;}
+    
+        set {
+            if(value==true){
+                GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f);
+            }
+            else{
+                GetComponent<SpriteRenderer>().color = new Color(0.3f, 0.3f, 0.3f, 1f);
+            }
+            interactable = value;
+        }
+            }
     private bool selected;
     public bool Selected
     {
@@ -96,7 +109,7 @@ public class Card : MonoBehaviour, IComparable
     private ConteneurCarte conteneur;
     private GameManager gameManager;
     private TheCrewGame theCrewGame;
-    public bool Activee { get; private set; } = false;//syntaxe ?
+    public bool Activee { get; private set; } = false;
 
     void Start()
     {
@@ -133,22 +146,24 @@ public class Card : MonoBehaviour, IComparable
         Activee = false;
     }
 
-    public bool IsPlayable()//Mettre IsPlayable au bon endroit pour empecher de jouer une mauvaise carte
+    public bool IsPlayable(List<Card> Hand)//Mettre IsPlayable au bon endroit pour empecher de jouer une mauvaise carte
     {
         //List<Card> Hand = transform.parent.GetComponent<HandPanel>().Hand;
-        List<Card> Hand = new List<Card>();
-        Couleur CouleurDuPli = GameObject.Find("Pli").GetComponent<Pli>().CouleurDemandee;
+        //List<Card> Hand = new List<Card>();
+        //Couleur CouleurDuPli = GameObject.Find("Pli").GetComponent<Pli>().CouleurDemandee;
+        Couleur CouleurDuPli = gameManager.pli.CouleurDemandee;
+        
         if (CouleurDuPli == Couleur.Neutre)   //Neutre signifie que il n'y a aucun couleur au pli actuel donc pas de carte jouée à ce pli
             return true;
         else
         {
             if (HandHoldColor(CouleurDuPli, Hand))   //Si on a des cartes dans la main qui a la couleur de la couleur du pli
             {
-                if (Color == CouleurDuPli)
+                if (Color == CouleurDuPli){
                     return true;
+                }
                 else
                 {
-                    GetComponent<SpriteRenderer>().color = new Color(0.2f, 0.2f, 0.2f, 0);
                     return false;
                 }
             }
@@ -161,7 +176,7 @@ public class Card : MonoBehaviour, IComparable
     {
         foreach (Card Carte in Hand)
         {
-            if (Color == couleur)//Je comprend pas comment ca marche, Color et couleur sont fixes non?
+            if (Carte.Color == couleur)
             {
                 return true;
             }
@@ -200,7 +215,7 @@ public class Card : MonoBehaviour, IComparable
 
     void OnMouseDown()
     {
-        if (Activee)
+        if (Activee && interactable)//Remplacer Activee par Interactable
         {
             switch (conteneur)
             {
@@ -212,10 +227,14 @@ public class Card : MonoBehaviour, IComparable
                         case TheCrewGame.Phase.UserCardsSelection:
                             RangerDansLeTableau();
                             break;
-                        case TheCrewGame.Phase.UserPlaying:
+                        case TheCrewGame.Phase.UserPlaying :
+                            Selected = !Selected;
+                            break;
+                        case TheCrewGame.Phase.UserPlayingOrCommunicating :
                             Selected = !Selected;
                             break;
                         case TheCrewGame.Phase.UserCommunicating:
+                            Selected = !Selected;
                             break;
                     }
                     break;
@@ -288,12 +307,12 @@ public class Card : MonoBehaviour, IComparable
 
     void OnMouseEnter()
     {
-        if (conteneur != ConteneurCarte.Pli)
+        if (conteneur != ConteneurCarte.Pli && interactable==true)
             GetComponent<SpriteRenderer>().color = new Color(0.9f, 0.9f, 0.9f, 0.7f);//Pour faire le petit effet lorsu'on hoover une carte
     }
     void OnMouseExit()
     {
-        if (conteneur != ConteneurCarte.Pli)
+        if (conteneur != ConteneurCarte.Pli &&interactable==true)
             GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f);
     }
 

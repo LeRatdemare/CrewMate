@@ -34,8 +34,10 @@ public class BoutonSuivant : MonoBehaviour
             case TheCrewGame.Phase.UserCardsSelection:
                 int handSize = gameManager.handPanel.GetCardsCount();
                 int nbCardsToDraw = theCrewGame.NbPlis;
-                if (handSize == nbCardsToDraw)
+                if (handSize == nbCardsToDraw){
+                    gameManager.handPanel.GetAllCards(); //On récupère toutes les cartes du joueur un fois la tache de selection terminée
                     theCrewGame.GamePhase = TheCrewGame.Phase.FirstPlayerSelection;
+                }
                 // Si le joueur n'a pas sélectionné le bon nombre de carte
                 else
                 {
@@ -84,34 +86,80 @@ public class BoutonSuivant : MonoBehaviour
                     gameManager.ShowMessagePopup(msg, 6, title);
                 }
                 break;
+            
+            case TheCrewGame.Phase.UserPlayingOrCommunicating: //Le code est un copier coller de UserPlaying
+                //Faire attention car d'ici on peut passer directement au joueur d'après
+                //donc on doit mettre un cas qui aboutit sur NextPlayer()
 
-            case TheCrewGame.Phase.UserPlaying:
                 // On récupère la carte sélectionnée et on la met dans le Slot correspondant du Pli
                 selectedCard = gameManager.handPanel.GetSelectedCard();
                 // S'il en a sélectionné une on l'ajoute au Slot correspondant du pli
                 if (selectedCard != null)
                 {
-                    if (theCrewGame.User.communication==false){
-                        theCrewGame.User.RetirerMaxMinCouleur((int)selectedCard.Color, selectedCard.Value);//On continue à actualiser la plus haute et la plus basse carte que le joueur a en main
-                    }
-                    gameManager.pli.transform.GetChild(0).GetComponent<Card>().Activer(selectedCard, Card.ConteneurCarte.Pli);
-                    selectedCard.Desactiver();
-                    // On déselectionne toutes les cartes
-                    gameManager.handPanel.DeselectAllCards();
+                    if(selectedCard.IsPlayable(gameManager.handPanel.UserHand))//verif si la carte est IspLayable
+                    {
+                        if (theCrewGame.User.communication==false){
+                            theCrewGame.User.RetirerMaxMinCouleur((int)selectedCard.Color, selectedCard.Value);//On continue à actualiser la plus haute et la plus basse carte que le joueur a en main
+                        }
+                        gameManager.pli.transform.GetChild(0).GetComponent<Card>().Activer(selectedCard, Card.ConteneurCarte.Pli);
+                        gameManager.handPanel.UserHand.Remove(selectedCard);
+                        selectedCard.Desactiver();
+                        // On déselectionne toutes les cartes
+                        gameManager.handPanel.DeselectAllCards();
 
-                    theCrewGame.NextPlayer();
+                        theCrewGame.NextPlayer();
+                    }
+                    else{//La carte n'est pas jouable
+                        title = "==Erreur==";
+                        msg = $"Cette carte n'est pas jouable car la couleur demandée est le {gameManager.pli.CouleurDemandee}, et vous possédez des cartes de cette couleur";
+                        gameManager.ShowMessagePopup(msg, 6, title);
+                    }
+                    
                 }
                 // Si il n'a pas sélectionné de carte on le notifie  
-                else
+                else //Le joueur n'a pas sélectionné de carte, à la place il rentre dans le mode UserPlaying
                 {
-                    title = "==Erreur==";
-                    msg = $"C'est à votre tour de jouer, vous n'avez pas encore sélectionné de carte...";
+                    title = "==Changement de phase ==";
+                    msg = $"On passe à jouer";
                     gameManager.ShowMessagePopup(msg, 6, title);
+                    theCrewGame.GamePhase = TheCrewGame.Phase.UserPlaying;
                 }
                 break;
-            case TheCrewGame.Phase.UserCommunicating:
-                gameManager.BoutonCommuniquer.SetActive(false);
-                theCrewGame.NextPlayer();
+
+            case TheCrewGame.Phase.UserPlaying:
+                selectedCard = gameManager.handPanel.GetSelectedCard();
+                // S'il en a sélectionné une on l'ajoute au Slot correspondant du pli
+                if (selectedCard != null)
+                {
+                        if (theCrewGame.User.communication==false){
+                            theCrewGame.User.RetirerMaxMinCouleur((int)selectedCard.Color, selectedCard.Value);//On continue à actualiser la plus haute et la plus basse carte que le joueur a en main
+                        }
+                        gameManager.pli.transform.GetChild(0).GetComponent<Card>().Activer(selectedCard, Card.ConteneurCarte.Pli);
+                        gameManager.handPanel.UserHand.Remove(selectedCard);
+                        selectedCard.Desactiver();
+                        // On déselectionne toutes les cartes
+                        gameManager.handPanel.DeselectAllCards();
+
+                        theCrewGame.NextPlayer();
+                }
+                    
+                // Si il n'a pas sélectionné de carte on le notifie  
+                else //Le joueur n'a pas sélectionné de carte, à la place il rentre dans le mode UserPlaying
+                {
+                    title = "==Changement de phase ==";
+                    msg = $"On passe à jouer et communiquer.";
+                    gameManager.ShowMessagePopup(msg, 6, title);
+                    theCrewGame.GamePhase = TheCrewGame.Phase.UserPlayingOrCommunicating;
+                }
+                gameManager.handPanel.GetAllCardsInteractable();
+        
+                
+                break;
+            case TheCrewGame.Phase.UserCommunicating: //On passe à la phase UserPlaying
+                gameManager.handPanel.DeselectAllCards();
+                theCrewGame.GamePhase = TheCrewGame.Phase.UserPlaying;
+                //gameManager.BoutonCommuniquer.SetActive(false);
+                //theCrewGame.NextPlayer();
                 // A coder...
                 break;
             case TheCrewGame.Phase.OtherPlayerPlaying:
@@ -136,24 +184,6 @@ public class BoutonSuivant : MonoBehaviour
                 }
                 break;
             case TheCrewGame.Phase.OtherPlayerCommunicating:
-                selectedCard = gameManager.choixjetons.GetSelectedCard();
-                if (selectedCard != null)//IL VA FALLOIR VERIFIER QU'ON NE PUISSE PAS CLIQUER SUR LES CARTES DANS HANDPANEL OU AUTRE
-                {
-                    int nb;
-                    string nom = selectedCard.name.Remove(0,5);//Cela correspond à l'index du mot "Carte" dans "Carte0", "Carte1", "Carte2"..ect
-                    int.TryParse(nom, out nb);//Si nb=0 jeton en haut si nb= 1 jeton au milieu et 2 jeton en bas    jn,
-                    GameObject.Find($"Player{theCrewGame.currentPlayer}/Communication{theCrewGame.currentPlayer}").transform.GetChild(nb).GetComponent<SpriteRenderer>().sprite =gameManager.jetonSprite;
-                    selectedCard.Desactiver();
-                    gameManager.choixjetons.DeselectAllCards();//A voir si l'instruction n'a pas déjà été mise ailleurs
-                    gameManager.choixjetons.gameObject.SetActive(false);
-                    theCrewGame.GamePhase = TheCrewGame.Phase.OtherPlayerPlaying;
-                } 
-                else
-                {
-                    title = "==Erreur==";
-                    msg = $"Vous devez sélectionner un emplacement pour le jeton communication";
-                    gameManager.ShowMessagePopup(msg, 6, title);
-                }
                 break;
         }
         Debug.Log($"Etape suivante, phase actuelle : {theCrewGame.GamePhase}");
